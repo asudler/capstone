@@ -1,7 +1,7 @@
 #include <cmath>
 #include <iostream>
-#include "misctools.h"
-#include "spline.h"
+#include "/home/ajs/repos/capstone/src/misctools/misctools.h"
+#include "/home/ajs/repos/capstone/src/spline/spline.h"
 
 void makedata(int argc, char *argv[])
 {
