@@ -1,7 +1,10 @@
 #include <cmath>
+#include <complex>
 #include <iostream>
-#include "/home/ajs/repos/capstone/src/misctools/misctools.h"
-#include "/home/ajs/repos/capstone/src/spline/spline.h"
+#include "/home/asudler/git/capstone/misctools/misctools.h"
+#include "/home/asudler/git/capstone/spline/spline.h"
+
+using namespace std::complex_literals;
 
 void makedata(int argc, char *argv[])
 {
@@ -17,11 +20,13 @@ void makedata(int argc, char *argv[])
         throw std::invalid_argument("makedata: invalid or missing "
             "cmd line inputs");
 
+	std::cout << "x,Re(y),Im(y)\n";
     for(int i = 0; i <= ni; i++)
     {
         double x = ((double)i/ni)*xmax;
-        double y = std::exp(-0.1*x)*std::sin(x);
-        std::cout << x << ',' << y << '\n';
+        std::complex<double> y = std::exp(-0.1*x)*std::sin(x)
+			+ 1i*std::exp(-0.1*x)*std::cos(x);
+        std::cout << x << ',' << y.real() << ',' << y.imag() << '\n';
     }
 } // makedata
 
@@ -42,22 +47,25 @@ void test_cubic_spline(int argc, char *argv[])
         throw std::invalid_argument("test_cubic_spline: "
             "invalid or missing cmd line inputs");
 
-    std::vector<std::vector<double>> v = csv_read::read(fname);
+    std::vector<std::vector<double>> v = read(fname);
     std::vector<double> xs(v.size());
-    std::vector<double> ys(v.size());
+    std::vector<std::complex<double>> ys(v.size());
     for(int i = 0; i < v.size(); i++)
     {
-        xs[i] = v[i][0]; ys[i] = v[i][1];
+        xs[i] = v[i][0]; ys[i] = v[i][1] + 1i*v[i][2];
     } // extract x and y data from fileread
     
-    cubic_spline cspline(xs, ys);
-
-    std::cout << "x,f(x),f'(x),F(x)\n";
+	cubic_spline<std::complex<double>> cspline(xs, ys);
+    std::cout << "x,Re[f(x)],Im[f(x)],Re[f'(x)],Im[f'(x)],Re[F(x)],Im[F(x)]\n";
     for(int i = 0; i <= ni; i++)
     {
         double z = (xs[xs.size()-1]/ni)*i;
-        std::cout << z << ',' << cspline.evaluate(z) << ',' << 
-            cspline.derivative(z) << ',' << cspline.integral(z) << '\n';
+        std::cout << z << ',' << cspline.evaluate(z).real() << ',' <<
+			cspline.evaluate(z).imag() << ',' << 
+			cspline.derivative(z).real() << ',' <<
+            cspline.derivative(z).imag() << ',' <<
+			cspline.integral(z).real() << ',' << 
+            cspline.integral(z).imag() << ',' << '\n';
     }
 } // test_cubic_spline
 
