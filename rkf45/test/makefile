@@ -1,9 +1,9 @@
 CXX = g++
-CXXFLAGS = -std=c++17
+CXXFLAGS = -std=c++17 -g
 LDLIBS = -lstdc++
 
-SRCS = main.cc ~/git/capstone/src/rkf45/rkf45.cc \
-	   ~/git/capstone/src/spline/spline.cc
+SRCS = main.cc ~/git/capstone/rkf45/rkf45.cc \
+	   ~/git/capstone/spline/spline.cc
 OBJS = $(SRCS:.cc=.o)
 
 TARGET = main.out

@@ -1,6 +1,6 @@
 #include <cmath>
 #include <iostream>
-#include "/home/asudler/git/capstone/src/rkf45/rkf45.h"
+#include "/home/asudler/git/capstone/rkf45/rkf45.h"
 
 std::vector<double> f(double x, std::vector<double> y)
 {
@@ -28,14 +28,15 @@ void test_rkf45(int argc, char *argv[])
     if(dt == 0)
     {
         std::pair<std::vector<double>, std::vector<std::vector<double>>> sol
-            = driver(f, {ti, tf}, y0);
+            = driver<double>(f, {ti, tf}, y0);
         for(int i = 0; i < sol.first.size(); i++)
             std::cout << sol.first[i] << ',' << sol.second[i][0] << ',' 
                 << sol.second[i][1] << '\n';
     }
     else
     {
-        std::vector<cubic_spline> ys = interpolant(f, {ti, tf}, y0);
+        std::vector<cubic_spline<double>> ys 
+            = interpolant<double>(f, {ti, tf}, y0);
         while(ti < tf)
         {
             std::cout << ti << ',';

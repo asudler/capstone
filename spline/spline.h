@@ -11,7 +11,7 @@ class spline
         virtual ~spline() {}
     
     protected:
-        static int binsearch(const std::vector<double> x, double z);
+        static int binsearch(const std::vector<double> &x, double z);
 }; // spline
 
 // cubic spline interpolation derived class

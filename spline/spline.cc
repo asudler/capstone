@@ -12,7 +12,7 @@ template class cubic_spline<std::complex<double>>;
  * binary search algorithm; i.e.,
  * finding target interval of a sorted array
  * by bisection */
-int spline::binsearch(const std::vector<double> x, double z)
+int spline::binsearch(const std::vector<double> &x, double z)
 {
     if(z < x[0] || z > x[x.size() - 1]) // reject searches outside array
         throw std::invalid_argument("binsearch: bad z");
@@ -37,8 +37,8 @@ cubic_spline<T>::cubic_spline(const std::vector<double> &xs,
     x_ = xs; y_ = ys;
 
     int n = x_.size();
-    b_.resize(n); c_.resize(n-1); d_.resize(n-1);
-    std::vector<double> h(n-1);
+	b_.resize(n); c_.resize(n-1); d_.resize(n-1);
+	std::vector<double> h(n-1);
 	std::vector<T> p(n-1), D(n), Q(n-1), B(n);
     for(int i = 0; i < n-1; i++)
     {

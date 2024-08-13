@@ -4,34 +4,37 @@
 #include <functional>
 #include <utility>
 #include <vector>
-#include "/home/asudler/git/capstone/src/spline/spline.h"
+#include "/home/asudler/git/capstone/spline/spline.h"
 
-std::pair<std::vector<double>, std::vector<double>> rkf45
+template <typename T>
+std::pair<std::vector<T>, std::vector<T>> rkf45
 (
-    const std::function<std::vector<double>(double, std::vector<double>)> f,
+    const std::function<std::vector<T>(double, std::vector<T>)> f,
     const double x,
-    const std::vector<double> y,
+    const std::vector<T> y,
     double h
 ); // rkf45
 
-std::pair<std::vector<double>, std::vector<std::vector<double>>> driver
+template <typename T>
+std::pair<std::vector<double>, std::vector<std::vector<T>>> driver
 (
-    const std::function<std::vector<double>(double, std::vector<double>)> f,
+    const std::function<std::vector<T>(double, std::vector<T>)> f,
     const std::pair<double, double> interval,
-    const std::vector<double> yi,
+    const std::vector<T> yi,
     double h=0.125,
-    double acc=1e-3,
-    double eps=1e-3
+    const double acc=1e-3,
+    const double eps=1e-3
 ); // driver
 
-std::vector<cubic_spline> interpolant
+template <typename T>
+std::vector<cubic_spline<T>> interpolant
 (
-    const std::function<std::vector<double>(double, std::vector<double>)> f,
+    const std::function<std::vector<T>(double, std::vector<T>)> f,
     const std::pair<double, double> interval,
-    const std::vector<double> yi,
+    const std::vector<T> yi,
     double h=0.125,
-    double acc=1e-3,
-    double eps=1e-3
+    const double acc=1e-3,
+    const double eps=1e-3
 ); // interpolant
 
 #endif // RKF45_H
