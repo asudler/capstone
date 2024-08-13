@@ -15,18 +15,18 @@ std::vector<std::vector<double>> read(
     std::vector<std::vector<double>> v; int counter = 0;
     while(fgets(buffer, sizeof(buffer), fp))
     {
-		if(counter > skip_header)
-		{
-        	char *data = std::strtok(buffer, ",");
-        	std::vector<double> vrow;
-        	while(data != NULL)
-        	{
-        	    vrow.push_back(std::stod(data));
-        	    data = strtok(NULL, ",");
-        	}
-        	v.push_back(vrow);
-		}
-		counter += 1;
+        if(counter > skip_header)
+        {
+            char *data = std::strtok(buffer, ",");
+            std::vector<double> vrow;
+            while(data != NULL)
+            {
+                vrow.push_back(std::stod(data));
+                data = strtok(NULL, ",");
+            }
+        v.push_back(vrow);
+        }
+        counter += 1;
     } // there is probably a better way to do it... but it works
     fclose(fp);
 
