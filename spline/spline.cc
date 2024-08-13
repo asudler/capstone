@@ -4,10 +4,6 @@
 #include <stdexcept>
 #include "spline.h"
 
-/* explicit instantiation of template instances */
-template class cubic_spline<double>;
-template class cubic_spline<std::complex<double>>;
-
 /* binsearch:
  * binary search algorithm; i.e.,
  * finding target interval of a sorted array
@@ -29,7 +25,7 @@ int spline::binsearch(const std::vector<double> &x, double z)
  * cubic spline interpolation class constructor */
 template <typename T>
 cubic_spline<T>::cubic_spline(const std::vector<double> &xs, 
-	const std::vector<T> &ys)
+    const std::vector<T> &ys)
 {
     if(xs.size() != ys.size())
         throw new std::invalid_argument("cubic_spline: x's and y's "
@@ -37,9 +33,9 @@ cubic_spline<T>::cubic_spline(const std::vector<double> &xs,
     x_ = xs; y_ = ys;
 
     int n = x_.size();
-	b_.resize(n); c_.resize(n-1); d_.resize(n-1);
-	std::vector<double> h(n-1);
-	std::vector<T> p(n-1), D(n), Q(n-1), B(n);
+    b_.resize(n); c_.resize(n-1); d_.resize(n-1);
+    std::vector<double> h(n-1);
+    std::vector<T> p(n-1), D(n), Q(n-1), B(n);
     for(int i = 0; i < n-1; i++)
     {
         h[i] = x_[i+1] - x_[i];
@@ -76,6 +72,10 @@ cubic_spline<T>::cubic_spline(const std::vector<double> &xs,
     }
 } // constructor
 
+/* explicit instantiation of cubic_spline templates */
+template class cubic_spline<double>;
+template class cubic_spline<std::complex<double>>;
+
 /* cubic_spline evaluate:
  * evaluate the cubic spline at a given coordinate input */
 template <typename T>
@@ -100,7 +100,8 @@ T cubic_spline<T>::derivative(double z) const
 /* cubic_spline integral:
  * calculate the antiderivative of the cubic spline
  * from the beginning of the dataset up to
- * a given coordinate input */
+ * a given coordinate input. 
+ * satisfies boundary condition F(0) = 0 (F'(x) = f(x)) */
 template <typename T>
 T cubic_spline<T>::integral(double z) const
 {
@@ -111,12 +112,12 @@ T cubic_spline<T>::integral(double z) const
         dx = x_[j+1] - x_[j];
         integral += y_[j]*dx + b_[j]*std::pow(dx, 2)/2.
             + c_[j]*std::pow(dx, 3)/3. 
-			+ d_[j]*std::pow(dx, 4)/4.;
+            + d_[j]*std::pow(dx, 4)/4.;
     }
     integral += y_[i]*(z - x_[i]) 
-		+ b_[i]*std::pow(z - x_[i], 2)/2. 
-		+ c_[i]*std::pow(z - x_[i], 3)/3. 
-		+ d_[i]*std::pow(z - x_[i], 4)/4.;
+        + b_[i]*std::pow(z - x_[i], 2)/2. 
+        + c_[i]*std::pow(z - x_[i], 3)/3. 
+        + d_[i]*std::pow(z - x_[i], 4)/4.;
     return integral;
 } // integral
 

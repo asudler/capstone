@@ -10,7 +10,11 @@ TARGET = main.out
 $(TARGET) : $(OBJS)
 	$(CXX) $(CXXFLAGS) $(LDLIBS) -o $(TARGET) $^
 
-cspline.png : cspline.gp cspline.dat fcn.dat
+cspline_im.png : cspline_im.gp cspline.dat fcn.dat
+	gnuplot -e "outfile='$@' ; interpolation='$(word 2,$^)' ; \
+	data='$(word 3,$^)'" $<
+
+cspline_re.png : cspline_re.gp cspline.dat fcn.dat
 	gnuplot -e "outfile='$@' ; interpolation='$(word 2,$^)' ; \
 	data='$(word 3,$^)'" $<
 

@@ -14,6 +14,6 @@ df(x) title "derivative (analytical)", \
 F(x) title "antiderivative (analytical)", \
 data skip 1 u 1:2 w p pointsize 2 title "raw data", \
 interpolation skip 1 u 1:2 w p title "cubic spline", \
-interpolation skip 1 u 1:3 w p title "spline differentiation", \
-interpolation skip 1 u 1:4 w p title "spline integration"
+interpolation skip 1 u 1:4 w p title "spline differentiation", \
+interpolation skip 1 u 1:6 w p title "spline integration"
 

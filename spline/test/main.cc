@@ -20,12 +20,12 @@ void makedata(int argc, char *argv[])
         throw std::invalid_argument("makedata: invalid or missing "
             "cmd line inputs");
 
-	std::cout << "x,Re(y),Im(y)\n";
+    std::cout << "x,Re(y),Im(y)\n";
     for(int i = 0; i <= ni; i++)
     {
         double x = ((double)i/ni)*xmax;
         std::complex<double> y = std::exp(-0.1*x)*std::sin(x)
-			+ 1i*std::exp(-0.1*x)*std::cos(x);
+            + 1i*std::exp(-0.1*x)*std::cos(x);
         std::cout << x << ',' << y.real() << ',' << y.imag() << '\n';
     }
 } // makedata
@@ -55,16 +55,16 @@ void test_cubic_spline(int argc, char *argv[])
         xs[i] = v[i][0]; ys[i] = v[i][1] + 1i*v[i][2];
     } // extract x and y data from fileread
     
-	cubic_spline<std::complex<double>> cspline(xs, ys);
+    cubic_spline<std::complex<double>> cspline(xs, ys);
     std::cout << "x,Re[f(x)],Im[f(x)],Re[f'(x)],Im[f'(x)],Re[F(x)],Im[F(x)]\n";
     for(int i = 0; i <= ni; i++)
     {
         double z = (xs[xs.size()-1]/ni)*i;
         std::cout << z << ',' << cspline.evaluate(z).real() << ',' <<
-			cspline.evaluate(z).imag() << ',' << 
-			cspline.derivative(z).real() << ',' <<
+            cspline.evaluate(z).imag() << ',' << 
+            cspline.derivative(z).real() << ',' <<
             cspline.derivative(z).imag() << ',' <<
-			cspline.integral(z).real() << ',' << 
+            cspline.integral(z).real() << ',' << 
             cspline.integral(z).imag() << ',' << '\n';
     }
 } // test_cubic_spline

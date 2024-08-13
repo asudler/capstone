@@ -10,6 +10,9 @@ TARGET = main.out
 $(TARGET) : $(OBJS)
 	$(CXX) $(CXXFLAGS) $(LDLIBS) -o $(TARGET) $^
 
+oscillator.png : oscillator.gp oscillator.dat
+	gnuplot -e "outfile='$@' ; data='$(word 2,$^)'" $<
+
 oscillator.dat : $(TARGET)
 	./$< --test -b 0.25 -c 5.0 -yi 3.04159 -dyi 0 -ti 0 -tf 10 -dt 0.1 > $@
 

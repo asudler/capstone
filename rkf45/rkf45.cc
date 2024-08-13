@@ -120,7 +120,6 @@ template std::pair<std::vector<std::complex<double>>,
     double h
 );
 
-
 /* driver:
  * solve ODE with an adaptive step size 
  * uses rkf45 */
