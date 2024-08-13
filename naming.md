@@ -1,4 +1,13 @@
-The naming conventions for this project are adopted from the Boost style which closely matches the C++ standard library. Right now, the naming conventions are directly copied from [a stack overflow answer](https://stackoverflow.com/questions/3706379/what-is-a-good-naming-convention-for-vars-methods-etc-in-c), but I will update this guide as needed. 
+All directory and filenames should be entirely lowercase unless there is an intuitive reason otherwise. Directories that consist of several words should use a hyphen to separate the words. Filenames should use underscores to separate words. 
+Files which a program will read in and are not be removed by ``make clean`` should follow the naming convention ``in.<descriptive_name>.<extension>``. Similarly, files which a program will create should be named ``out.<descriptive_name>.extension``. My preferred extensions are
+- ``.cc`` for C++ source files,
+- ``.h`` for C++ header files,
+- ``.csv`` for comma-separated C++ io datafiles (default),
+- ``.dat`` for all other C++ io datafiles,
+- ``.png`` for image files (use other extensions where appropriate),
+- ``.gp`` for gnuplot plotting files.
+
+The naming conventions for code in this project are adopted from the Boost style which closely matches the C++ standard library. Right now, the naming conventions are directly copied from [a stack overflow answer](https://stackoverflow.com/questions/3706379/what-is-a-good-naming-convention-for-vars-methods-etc-in-c), but I will update this guide as needed. 
 
 ```
 #ifndef NAMESPACE_NAMES_THEN_PRIMARY_CLASS_OR_FUNCTION_THEN_HPP

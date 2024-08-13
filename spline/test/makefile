@@ -10,23 +10,23 @@ TARGET = main.out
 $(TARGET) : $(OBJS)
 	$(CXX) $(CXXFLAGS) $(LDLIBS) -o $(TARGET) $^
 
-cspline_im.png : cspline_im.gp cspline.dat fcn.dat
+out.cspline_im.png : in.cspline_im.gp out.cspline.csv fcn.csv
 	gnuplot -e "outfile='$@' ; interpolation='$(word 2,$^)' ; \
 	data='$(word 3,$^)'" $<
 
-cspline_re.png : cspline_re.gp cspline.dat fcn.dat
+out.cspline_re.png : in.cspline_re.gp out.cspline.csv fcn.csv
 	gnuplot -e "outfile='$@' ; interpolation='$(word 2,$^)' ; \
 	data='$(word 3,$^)'" $<
 
-cspline.dat : $(TARGET) fcn.dat
+out.cspline.csv : $(TARGET) fcn.csv
 	./$< --test -ni 100 -fname $(word 2,$^) > $@
 
-fcn.dat : $(TARGET)
+fcn.csv : $(TARGET)
 	./$< --makedata -ni 12 -xmax 10 > $@
 
 %.o : %.cc
 	$(CXX) -c $(CXXFLAGS) -o $@ $<
 
 clean : 
-	rm -rf *.out *.o *.dat *.png
+	rm -rf *.out *.o *.dat *.png *.csv
 
