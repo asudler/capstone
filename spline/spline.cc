@@ -8,10 +8,10 @@
  * binary search algorithm; i.e.,
  * finding target interval of a sorted array
  * by bisection */
-int spline::binsearch(const std::vector<double> &x, double z)
+int spline::binsearch(const std::vector<double>& x, double z)
 {
-    if(z < x[0] || z > x[x.size() - 1]) // reject searches outside array
-        throw std::invalid_argument("binsearch: bad z");
+    if(z < x[0] || z > x[x.size()-1]) throw std::invalid_argument("binsearch: " 
+        "bad z"); // reject searches outside array
     int i = 0; int j = x.size() - 1;
     while(j - i > 1)
     {
@@ -24,12 +24,11 @@ int spline::binsearch(const std::vector<double> &x, double z)
 /* cubic_spline:
  * cubic spline interpolation class constructor */
 template <typename T>
-cubic_spline<T>::cubic_spline(const std::vector<double> &xs, 
-    const std::vector<T> &ys)
+cubic_spline<T>::cubic_spline(const std::vector<double>& xs, 
+    const std::vector<T>& ys)
 {
-    if(xs.size() != ys.size())
-        throw new std::invalid_argument("cubic_spline: x's and y's "
-            "must have the same size");
+    if(xs.size() != ys.size()) throw std::invalid_argument("cubic_spline: "
+        "x's and y's must have the same size");
     x_ = xs; y_ = ys;
 
     int n = x_.size();
@@ -63,8 +62,7 @@ cubic_spline<T>::cubic_spline(const std::vector<double> &xs,
     
     // back substitution
     b_[n-1] = B[n-1]/D[n-1];
-    for(int i = n - 2; i >= 0; i--) 
-        b_[i] = (B[i] - Q[i]*b_[i+1])/D[i];
+    for(int i = n - 2; i >= 0; i--) b_[i] = (B[i] - Q[i]*b_[i+1])/D[i];
     for(int i = 0; i < n - 1; i++) 
     {
         c_[i] = (-2.*b_[i] - b_[i+1] + 3.*p[i])/h[i];

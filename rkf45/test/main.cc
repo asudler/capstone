@@ -29,9 +29,8 @@ void test_rkf45(int argc, char *argv[])
     {
         std::pair<std::vector<double>, std::vector<std::vector<double>>> sol
             = driver<double>(f, {ti, tf}, y0);
-        for(int i = 0; i < sol.first.size(); i++)
-            std::cout << sol.first[i] << ',' << sol.second[i][0] << ',' 
-                << sol.second[i][1] << '\n';
+        for(int i = 0; i < sol.first.size(); i++) std::cout << sol.first[i] 
+            << ',' << sol.second[i][0] << ',' << sol.second[i][1] << '\n';
     }
     else
     {
@@ -40,14 +39,14 @@ void test_rkf45(int argc, char *argv[])
         while(ti < tf)
         {
             std::cout << ti << ',';
-            for(int i = 0; i < ys.size(); i++)
-                std::cout << ys[i].evaluate(ti) << ',';
+            for(int i = 0; i < ys.size(); i++) std::cout << ys[i].evaluate(ti) 
+                << ',';
             std::cout << '\n';
             ti += dt;
         }
         std::cout << tf << ',';
-        for(int i = 0; i < ys.size(); i++) 
-            std::cout << ys[i].evaluate(tf) << ',';
+        for(int i = 0; i < ys.size(); i++) std::cout << ys[i].evaluate(tf) 
+            << ',';
         std::cout << '\n';
     }
 } // test_rkf45
@@ -56,8 +55,7 @@ int main(int argc, char *argv[])
 {   
     for(int i = 0; i < argc; ++i)
     {
-        if(std::string(argv[i]) == "--test")
-            test_rkf45(argc, argv);
+        if(std::string(argv[i]) == "--test") test_rkf45(argc, argv);
     }
     return 0;
 } // main

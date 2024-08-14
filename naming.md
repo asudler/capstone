@@ -71,6 +71,9 @@ namespace lowercase_identifers
     };
 }
 
+int* pointer_symbol_by_type; // not int *variable_name
+double& same_for_address; // ...
+
 #endif
 ```
 

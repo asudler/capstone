@@ -6,6 +6,9 @@
 #include <vector>
 #include "/home/asudler/git/capstone/spline/spline.h"
 
+/* if future revisions occur,
+ * consider using type aliases to shorten declarations... */
+
 template <typename T>
 std::pair<std::vector<T>, std::vector<T>> rkf45
 (
