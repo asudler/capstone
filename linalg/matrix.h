@@ -12,8 +12,9 @@
 #include <string>
 #include <vector>
 
-/* n.b.:
- * maybe organize into public, protected, private members in the future */
+/* ideas for the future:
+ * (1) maybe organize into public, protected, private members
+ * (2) implement type casting  */
 
 template <typename T>
 struct matrix
@@ -39,7 +40,7 @@ struct matrix
     /* member functions */
     matrix copy(); // copy
     matrix transpose(); // transpose (swap rows and columns)
-    void print(std::string s="") const; // print matrix, e.g. M.print("M:")
+    void print(std::string s="", char delimiter=' ') const; // print matrix
 
     /* struct member operators */
     matrix& operator+=(const matrix&);
@@ -48,18 +49,32 @@ struct matrix
     matrix& operator*=(T);
     matrix& operator/=(T);
     // matrix& operator^(int); // tbd lol
-
-    matrix operator+(const matrix&, const matrix&);
 }; // matrix
 
-/* non-member operators */ 
-//template <typename T> matrix<T> operator+(const matrix&, const matrix&);
-/*
-matrix operator-(const matrix&, const matrix&);
-matrix operator*(matrix&, matrix&);
-matrix operator*(const matrix&, double x);
-matrix operator*(double x, const matrix&);
-matrix operator/(const matrix&, double x);
-*/
+/* non-member operators (not sure of the technical term) */ 
+template <typename T, typename U>
+matrix<decltype(std::declval<T>()+std::declval<U>())>
+operator+(const matrix<T>&, const matrix<U>&); // addition
+template <typename T, typename U> 
+matrix<decltype(std::declval<T>()-std::declval<U>())> 
+operator-(const matrix<T>&, const matrix<U>&); // subtraction
+template <typename T, typename U> 
+matrix<decltype(std::declval<T>()*std::declval<U>())> 
+operator*(const matrix<T>&, const matrix<U>&); // matrix*matrix
+template <typename T, typename U> 
+matrix<decltype(std::declval<T>()*std::declval<U>())> 
+operator*(const matrix<T>&, U x); // matrix*number
+template <typename T, typename U> 
+matrix<decltype(std::declval<T>()*std::declval<U>())> 
+operator*(T x, const matrix<U>&); // number*matrix
+template <typename T, typename U> 
+matrix<decltype(std::declval<T>()/std::declval<U>())> 
+operator/(const matrix<T>&, U x); // matrix/number
+template <typename T, typename U> 
+std::vector<decltype(std::declval<T>()*std::declval<U>())> 
+operator*(const matrix<T>&, const std::vector<U>&); // matrix*vector
+
+#include "matrix.t" // must define public templates in header file
+
 #endif // MATRIX_H. Thanks Dmitri!
 

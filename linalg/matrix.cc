@@ -25,9 +25,6 @@ matrix<T>& matrix<T>::operator=(const matrix& other)
 {
     if(this == &other) return *this; // self-assignment check
 
-    // destroy any data
-    (*this).~matrix();
-
     // resize and copy
     data.resize(other.size1*other.size2);
     std::copy(other.data.begin(), other.data.end(), data.begin());
@@ -53,9 +50,6 @@ template <typename T> // move assignment
 matrix<T>& matrix<T>::operator=(matrix&& other) noexcept
 {
     if(this == &other) return *this; // self-assignment check
-
-    // destroy any data
-    (*this).~matrix();
 
     // transfer ownership of data
     data = std::move(other.data);
@@ -106,14 +100,14 @@ matrix<T> matrix<T>::transpose()
 }
 
 template <typename T> // print member function
-void matrix<T>::print(std::string s) const 
+void matrix<T>::print(std::string s, char delimiter) const 
 {
     std::cout << s.c_str() << '\n';
     for(int i = 0; i < size1; i++)
     {
         for(int j = 0; j < size2; j++) 
         {
-            std::cout << (*this)(i, j) << ' ';
+            std::cout << (*this)(i, j) << delimiter;
         }
         std::cout << '\n';
     }
@@ -155,27 +149,17 @@ matrix<T>& matrix<T>::operator*=(const matrix& other)
     return *this;
 }
 
-template <typename T> // *= (T*matrix)
+template <typename T> // *= (x*matrix)
 matrix<T>& matrix<T>::operator*=(T x)
 {
     for(int i = 0; i < size1*size2; i++) data[i] *= x;
     return *this;
 }
 
-template <typename T> // *= (T*matrix)
+template <typename T> // *= (x*matrix)
 matrix<T>& matrix<T>::operator/=(T x)
 {
     for(int i = 0; i < size1*size2; i++) data[i] /= x;
     return *this;
-}
-
-template <typename T> // M3 = M1 + M2
-matrix<T> operator+(const matrix& M1, const matrix& M2)
-{
-    assert(M1.size1 == M2.size1 && M1.size2 == M2.size2);
-    matrix M3 = matrix(M1.size1, M1.size2);
-    for(int i = 0; i < M1.size1*M1.size2; i++) M3.data[i] =
-        M1.data[i] + M2.data[i];
-    return M3;
 }
 
