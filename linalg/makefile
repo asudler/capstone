@@ -2,7 +2,7 @@ CXX = g++
 CXXFLAGS = -std=c++17 -g
 LDLIBS = -lstdc++
 
-SRCS = main.cc ~/git/capstone/linalg/linalg.cc
+SRCS = main.cc ~/git/capstone/linalg/matrix.cc
 OBJS = $(SRCS:.cc=.o)
 
 TARGET = main.out
