@@ -9,6 +9,7 @@ using namespace std::complex_literals;
 
 int main(void)
 {
+
     matrix<double> A(5,4);
     for(int i = 0; i < A.size1; i++) {
         for(int j = 0; j < A.size2; j++) {
@@ -53,6 +54,7 @@ int main(void)
     (E*H).print("E*H:");
     (E*H/3.).print("E*H/3.:");
     (0.5*H-2.*E*E).print("...", ',');
+
     return 0;
 }
 

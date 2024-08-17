@@ -20,6 +20,21 @@ matrix<T>::matrix(const matrix& other) : size1(other.size1), size2(other.size2)
     std::copy(other.data.begin(), other.data.end(), data.begin()); // copy
 }
 
+template <typename T> // copy vector of vectors into matrix
+matrix<T>::matrix(const std::vector<std::vector<T>>& other) : 
+    size1(other.size()), size2(other[0].size())
+{
+    std::vector<T> help = other[0]; // 1D array needed
+    for(int i = 1; i < other.size(); i++) // concatenate vector of vectors
+    {
+        if(other[i].size()!=other[0].size()) throw std::range_error("matrix: "
+            "no jagged matrices allowed");
+        help.insert(help.end(), other[i].begin(), other[i].end());
+    } 
+    data.resize(help.size()); // allocate mem
+    std::copy(help.begin(), help.end(), data.begin()); // copy
+}
+
 template <typename T> // copy assignment
 matrix<T>& matrix<T>::operator=(const matrix& other)
 {
@@ -38,7 +53,7 @@ matrix<T>& matrix<T>::operator=(const matrix& other)
 
 template <typename T> // move constructor
 matrix<T>::matrix(matrix&& other) noexcept : 
-size1(other.size1), size2(other.size2)
+    size1(other.size1), size2(other.size2)
 {
     data = std::move(other.data); // move data from "other" to "this"
     other.size1 = 0; // reset "other" to empty state

@@ -1,35 +1,46 @@
-#include <cstring>
+#include <fstream>
 #include <iostream>
+#include <sstream>
 #include <stdexcept>
+#include <string>
 #include "misctools.h"
 
-std::vector<std::vector<double>> read(
-	std::string fname,
-	int skip_header
+std::vector<std::vector<double>> read
+(
+    std::string fname,
+    char delimiter,
+    int skip_header
 )
 {
-    FILE *fp = fopen(fname.c_str(), "r");
-    if(fp == NULL) throw std::invalid_argument("file not found");
+    std::ifstream istrm(fname, std::ios::binary);
+    if(!istrm.is_open())
+        throw std::invalid_argument("failed to open file");
 
-    char buffer[1024];
-    std::vector<std::vector<double>> v; int counter = 0;
-    while(fgets(buffer, sizeof(buffer), fp))
+    std::string line; // skip header lines below
+    for(int i = 0; i < skip_header; i++) std::getline(istrm, line);
+
+    std::vector<std::vector<double>> data;
+    while(getline(istrm, line))
     {
-        if(counter > skip_header)
+        std::vector<double> row;
+        std::stringstream ss(line);
+        std::string word;
+        
+        while(getline(ss, word, delimiter))
         {
-            char *data = std::strtok(buffer, ",");
-            std::vector<double> vrow;
-            while(data != NULL)
+            try
             {
-                vrow.push_back(std::stod(data));
-                data = strtok(NULL, ",");
+                double number = stod(word); // cast string to double
+                row.push_back(number); // add double to row
             }
-        v.push_back(vrow);
+            catch(const std::invalid_argument& e)
+            {
+                std::cerr << "failed double cast: " << e.what() << '\n';
+            }
         }
-        counter += 1;
-    } // there is probably a better way to do it... but it works
-    fclose(fp);
+        data.push_back(row); // add row to data
+    }
+    istrm.close();
 
-    return v; 
-} // csv_read
-
+    return data;
+} // read

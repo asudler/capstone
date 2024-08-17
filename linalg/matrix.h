@@ -9,6 +9,7 @@
 #ifndef MATRIX_H
 #define MATRIX_H
 
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -25,6 +26,7 @@ struct matrix
     matrix(); // default constructor
     matrix(size_t, size_t); // parameterized constructor
     matrix(const matrix&); // copy constructor
+    matrix(const std::vector<std::vector<T>>&); // copy vector arr into matrix
     matrix& operator=(const matrix&); // copy assignment
     matrix(matrix&&) noexcept; // move constructor
     matrix& operator=(matrix&&) noexcept; // move assignment
@@ -41,7 +43,7 @@ struct matrix
     matrix copy(); // copy
     matrix transpose(); // transpose (swap rows and columns)
     void print(std::string s="", char delimiter=' ') const; // print matrix
-
+    
     /* struct member operators */
     matrix& operator+=(const matrix&);
     matrix& operator-=(const matrix&);
@@ -73,6 +75,10 @@ operator/(const matrix<T>&, U x); // matrix/number
 template <typename T, typename U> 
 std::vector<decltype(std::declval<T>()*std::declval<U>())> 
 operator*(const matrix<T>&, const std::vector<U>&); // matrix*vector
+
+/* non-member functions */
+// template <typename T> // read matrix from input filestream
+// matrix<T> read(string::fname, char delimiter=',', int skip_header=0);
 
 #include "matrix.t" // must define public templates in header file
 

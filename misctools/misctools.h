@@ -4,8 +4,10 @@
 #include <string>
 #include <vector>
 
-std::vector<std::vector<double>> read(
+std::vector<std::vector<double>> read
+(
 	std::string fname,
+    char delimiter=',',
 	int skip_header=0
 );
 

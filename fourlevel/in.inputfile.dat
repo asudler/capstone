@@ -1,0 +1,19 @@
+## inputfile to initialize state variables
+## if the comment begins with !, then providing an input value is necessary
+## otherwise, the variable will be initialized with default args
+
+rho_re : in.rho0_re.dat         # initial density matrix state, real part
+                                # defaults to ground state
+                                # filename (string)
+                                # ! both real and imag parts must be provided
+rho_im : in.rho0_im.dat         # initial density matrix state, imag part
+                                # defaults to ground state
+                                # filename (string)
+
+hbar : 1.                       # planck's constant
+                                # defaults to 1.
+                                # double
+
+cap_gamma : 1.                  # decay rate constant \Gamma
+                                # defaults to 0.
+                                # double

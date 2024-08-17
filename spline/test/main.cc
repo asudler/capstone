@@ -44,7 +44,7 @@ void test_cubic_spline(int argc, char *argv[])
     if(ni == 0) throw std::invalid_argument("test_cubic_spline: "
         "invalid or missing cmd line inputs");
 
-    std::vector<std::vector<double>> v = read(fname);
+    std::vector<std::vector<double>> v = read(fname, ',', 1);
     std::vector<double> xs(v.size());
     std::vector<std::complex<double>> ys(v.size());
     for(int i = 0; i < v.size(); i++)
@@ -67,7 +67,7 @@ void test_cubic_spline(int argc, char *argv[])
     }
 } // test_cubic_spline
 
-int main(int argc, char *argv[]) 
+int main(int argc, char* argv[]) 
 {   
     for(int i = 0; i < argc; ++i)
     {
