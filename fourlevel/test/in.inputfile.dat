@@ -17,3 +17,11 @@ hbar : 1.                       # planck's constant
 cap_gamma : 1.                  # decay rate constant \Gamma
                                 # defaults to 0.
                                 # double
+
+ti : 0.                         # initial simulation time
+                                # defaults to 0.
+                                # double
+
+tf : 0.                         # final simulation time
+                                # defaults to 0.
+                                # double                                                                                                

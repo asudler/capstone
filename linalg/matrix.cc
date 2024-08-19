@@ -114,6 +114,14 @@ matrix<T> matrix<T>::transpose()
     return M;
 }
 
+template <typename T> // unravel matrix row-by-row
+std::vector<T> matrix<T>::unravel()
+{
+    std::vector<T> v(size1*size2);
+    for(int i = 0; i < size1*size2; i++) v[i] = data[i];
+    return v;
+}
+
 template <typename T> // print member function
 void matrix<T>::print(std::string s, char delimiter) const 
 {

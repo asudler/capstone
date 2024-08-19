@@ -91,3 +91,11 @@ operator*(const matrix<T>& M, const std::vector<U>& v1)
     return v2;
 }
 
+template <typename T> // M is stacked row-by-row from v
+matrix<T> stack(std::vector<T> v, int nrows)
+{
+    assert(v.size() % nrows == 0); // ensure vector can be stacked in n rows
+    matrix<T> M(nrows, v.size()/nrows);
+    for(int i = 0; i < v.size(); i++) M.data[i] = v[i];
+    return M;
+}

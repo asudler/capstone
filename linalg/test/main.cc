@@ -1,4 +1,5 @@
 #include <complex>
+#include <iostream>
 #include "/home/asudler/git/capstone/linalg/matrix.h"
 
 using namespace std::complex_literals;
@@ -55,6 +56,13 @@ int main(void)
     (E*H/3.).print("E*H/3.:");
     (0.5*H-2.*E*E).print("...", ',');
 
+    std::vector<double> v = C.unravel();
+    for(double x : v) {
+        std::cout << x << ' ';
+    }
+    std::cout << '\n';
+
+    stack(C.unravel(), C.size1).print("stack of vec above");
     return 0;
 }
 
