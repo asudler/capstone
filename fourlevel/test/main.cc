@@ -36,22 +36,35 @@ int main(int argc, char* argv[])
         = driver<std::complex<double>>(master_eq, {state.ti, state.tf},
           state.rho); */
     
-    fourlevel_state state;
+    fourlevel_state state(inputfile);
 
     matrix<std::complex<double>> rho0(4,4);
-    rho0(3,3) = 1;
+    rho0(1,1) = 1;
     state.rho = rho0;
-
+/*
     matrix<std::complex<double>> H0(4,4);
     H0(0,0) = -0.1; H0(2,2) = 0.1; H0(3,3) = 1;
     H0(0,3) = -0.5; H0(3,0) = -0.5;
     H0(1,3) = -0.4; H0(3,1) = -0.5;
     H0(2,3) = -0.3; H0(3,2) = -0.3;
     state.H = H0;
-    
+  */  
     state.tf = 10.;
+//    state.H2(1).print();
+//    std::cout << cap_delta_B - cap_delta_pi + cap_delta_plus << '\n';
+/*    double test = 0.;
+    while(test<state.tf)
+    {
+        auto help = state.H2(test);
+        std::cerr << test << ' ' << help(0,3).real() << ' ' << help(1,3).real() 
+            << ' ' << help(2,3).real() << '\n';
+        test += 0.02;
+    }
+*/
+//    std::vector<cubic_spline<std::complex<double>>> rho = state.solve();
 
     auto [t, rho] = state.solve();
+    
     for(int i = 0; i < rho.size(); i++)
     {
         std::cout << t[i] << ' ';
@@ -60,7 +73,17 @@ int main(int argc, char* argv[])
             std::cout << rho[i][j].real() << ' ' << rho[i][j].imag() << ' ';
         }
         std::cout << '\n';
+    }/*
+    while(state.ti < state.tf)
+    {
+        std::cout << state.ti << ' ';
+        for(int i = 0; i < rho.size(); i++) std::cout << rho[i].evaluate(state.ti).real() << ' ' << rho[i].evaluate(state.ti).imag() << ' ';
+        std::cout << '\n';
+        state.ti += 0.05;
     }
+    std::cout << state.tf << ' ';
+    for(int i = 0; i < rho.size(); i++) std::cout << rho[i].evaluate(state.tf).real() << ' ' << rho[i].evaluate(state.tf).imag() << ' ';
+    std::cout << '\n';*/
     return 0;
 } // main
 

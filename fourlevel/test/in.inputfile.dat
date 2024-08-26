@@ -14,14 +14,42 @@ hbar : 1.                       # planck's constant
                                 # defaults to 1.
                                 # double
 
-cap_gamma : 1.                  # decay rate constant \Gamma
+cap_gamma : 38.107518888        # decay rate constant \Gamma
                                 # defaults to 0.
                                 # double
 
+cap_omega_plus : 34.5575191895  # \Omega_+, coupling between levels 1 and 4
+                                # defaults to 0.
+                                # double
+
+cap_omega_pi : 15.7079632679    # \Omega_{\pi}, coupling between levels 2 and 4
+                                # defaults to 0.
+                                # double
+
+cap_omega_minus : 34.5575191895 # \Omega_-, coupling between levels 3 and 4
+                                # defaults to 0.
+                                # double
+
+cap_delta_B : 6.28318530718     # ???
+                                # defaults to 0.
+                                # double
+
+cap_delta_pi : 12.5663706144    # ???
+                                # defaults to 0.
+                                # double
+
+cap_delta_plus : 12.5663706144  # ???
+                                # defaults to 0.
+                                # double 
+
+cap_delta_upper : 0.            # ???
+                                # defaults to 0.
+                                # double                                
+                                                               
 ti : 0.                         # initial simulation time
                                 # defaults to 0.
                                 # double
 
-tf : 0.                         # final simulation time
+tf : 10.                        # final simulation time
                                 # defaults to 0.
                                 # double                                                                                                

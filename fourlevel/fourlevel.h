@@ -3,11 +3,17 @@
 
 #include <complex>
 #include "/home/asudler/git/capstone/linalg/matrix.h"
+#include "/home/asudler/git/capstone/spline/spline.h"
 
 struct fourlevel_state
 {
+    // idk if this is allowed
+    matrix<std::complex<double>> H2(double t);
+
     matrix<std::complex<double>> H, rho;
-    double hbar, cap_gamma, ti, tf; // should be const?
+    double hbar, cap_gamma, ti, tf, cap_omega_plus, cap_omega_pi, 
+           cap_omega_minus, cap_delta_B, cap_delta_pi, cap_delta_plus,
+           cap_delta_upper; // should be const?
 
     fourlevel_state(); // default constructor
     fourlevel_state
@@ -24,7 +30,11 @@ struct fourlevel_state
 
     /* member functions */
     std::pair<std::vector<double>, 
-        std::vector<std::vector<std::complex<double>>>> solve();
+        std::vector<std::vector<std::complex<double>>>> solve(); 
+
+// std::vector<cubic_spline<std::complex<double>>> solve();
+// maybe come up with a better interface in the future
+// so that we can easily do either the spline or the nonsplined rkf45
 
     private:
         matrix<std::complex<double>> H_default_();
