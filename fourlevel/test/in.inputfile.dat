@@ -52,7 +52,8 @@ ti : 0.                         # initial simulation time
 
 tf : 10.                        # final simulation time
                                 # defaults to 0.
-                                # double                                            
+                                # double
+                                 
 t_on : 2.3                      # beam activation time
                                 # defaults to 0.
                                 # double
