@@ -11,6 +11,10 @@ SRCS = main.cc ~/git/capstone/fourlevel/fourlevel.cc \
 OBJS = $(SRCS:.cc=.o)
 
 TARGET = main.out
+
+out.rho.dat : $(TARGET) in.inputfile.dat
+	./$< -i in.inputfile.dat > $@
+
 $(TARGET) : $(OBJS)
 	$(CXX) $(CXXFLAGS) $(LDLIBS) -o $(TARGET) $^
 
@@ -18,5 +22,5 @@ $(TARGET) : $(OBJS)
 	$(CXX) -c $(CXXFLAGS) -o $@ $<
 
 clean :
-	rm -rf out.* *.o *.png *.csv
+	rm -rf out.* *.o *.png *.csv log.* *.log
 

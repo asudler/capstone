@@ -3,11 +3,11 @@
 ## otherwise, the variable will be initialized with default args
 
 rho_re : in.rho0_re.dat         # initial density matrix state, real part
-                                # defaults to ground state
+                                # defaults to zeros
                                 # filename (string)
                                 # ! both real and imag parts must be provided
 rho_im : in.rho0_im.dat         # initial density matrix state, imag part
-                                # defaults to ground state
+                                # defaults to zeros
                                 # filename (string)
 
 hbar : 1.                       # planck's constant
@@ -52,4 +52,15 @@ ti : 0.                         # initial simulation time
 
 tf : 10.                        # final simulation time
                                 # defaults to 0.
-                                # double                                                                                                
+                                # double                                            
+t_on : 2.3                      # beam activation time
+                                # defaults to 0.
+                                # double
+                                
+t_off : 3.5                     # beam deactivation time
+                                # defaults to 0.
+                                # double
+                                
+tau : 0.1                       # beam activation time width
+                                # defaults to 0. 
+                                # double                                
