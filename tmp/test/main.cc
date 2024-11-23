@@ -1,5 +1,5 @@
 #include <iostream>
-#include "/home/asudler/git/capstone/fourlevel/fourlevel.h"
+#include "/home/asudler/git/capstone/tmp/fourlevel.h"
 #include "/home/asudler/git/capstone/misctools/misctools.h"
 
 int main(int argc, char* argv[])
@@ -15,21 +15,17 @@ int main(int argc, char* argv[])
         "when executing the program."); // annoying: refactor into try/catch
    
     fourlevel_state state(inputfile);
-    boundary_conditions bc(inputfile);
-    filenames files(inputfile);
-
-    // check to make sure the beam sequence is correct
-    state.print_beams(files.beams);
-
-    // get a solution
-    state.solve();
-
-    // print the solution
-    state.print_rho(files.rho);
-
-    // print an easier-to-debug log of the solution
-    state.print_rho_log(files.rho_log);
-
+    auto [t, rho] = state.solve();
+    
+    for(int i = 0; i < rho.size(); i++)
+    {
+        std::cout << t[i] << ' ';
+        for(int j = 0; j < rho[0].size(); j++)
+        {
+            std::cout << rho[i][j].real() << ' ' << rho[i][j].imag() << ' ';
+        }
+        std::cout << '\n';
+    }    
     return 0;
 } // main
 

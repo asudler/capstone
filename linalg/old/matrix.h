@@ -43,7 +43,13 @@ struct matrix
     matrix copy(); // copy
     matrix transpose(); // transpose (swap rows and columns)
     std::vector<T> unravel(); // unravel matrix in row-by-row
-    void print(std::string s="", char delimiter=' ') const; // print matrix
+    std::vector<T> row(int m); // get row m of the matrix
+    std::vector<T> column(int n); // get column n of the matrix
+    void print(
+        std::string s="", 
+        char delimiter=' ',
+        std::ostream& output_stream=std::cout
+    ) const; // print matrix
     
     /* struct member operators */
     matrix& operator+=(const matrix&);
@@ -80,6 +86,8 @@ operator*(const matrix<T>&, const std::vector<U>&); // matrix*vector
 /* non-member functions */
 template <typename T>
 matrix<T> stack(std::vector<T>, int); // stack vector into matrix rows
+matrix<double> real(matrix<std::complex<double>>); // real part of matrix
+matrix<double> imag(matrix<std::complex<double>>); // imag part of matrix
 // template <typename T> // read matrix from input filestream
 // matrix<T> read(string::fname, char delimiter=',', int skip_header=0);
 

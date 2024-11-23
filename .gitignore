@@ -1,3 +1,4 @@
 *.o
 learn
-
+.old
+fourlevel/test-*

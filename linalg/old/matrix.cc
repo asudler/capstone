@@ -104,9 +104,9 @@ template <typename T> // transpose member function
 matrix<T> matrix<T>::transpose()
 {
     matrix<T> M(size2, size1);
-    for(int i = 0; i < size1; ++i)
+    for(int i = 0; i < size1; i++)
     {
-        for(int j = 0; j < size2; ++j)
+        for(int j = 0; j < size2; j++)
         {
             M.data[j + i*size2] = data[i + j*size1];
         }
@@ -118,21 +118,47 @@ template <typename T> // unravel matrix row-by-row
 std::vector<T> matrix<T>::unravel()
 {
     std::vector<T> v(size1*size2);
-    for(int i = 0; i < size1*size2; i++) v[i] = data[i];
+    for(int i = 0; i < size1; i++)
+    {
+        for(int j = 0; j < size2; j++)
+        {
+            v[i*size2 + j] = data[i + j*size1];
+        }
+    }
+    return v;
+}
+
+template <typename T> // returns row m of the matrix
+std::vector<T> matrix<T>::row(int m)
+{
+    std::vector<T> v(size2);
+    for(int i = 0; i < size2; i++) v[i] = data[m + i*size1];
+    return v;
+}
+
+template <typename T> // returns column n of the matrix
+std::vector<T> matrix<T>::column(int n)
+{
+    std::vector<T> v(size1);
+    for(int i = 0; i < size1; i++) v[i] = data[i + n*size1];
     return v;
 }
 
 template <typename T> // print member function
-void matrix<T>::print(std::string s, char delimiter) const 
+void matrix<T>::print(
+    std::string s, 
+    char delimiter, 
+    std::ostream& output_stream
+) const 
 {
-    std::cout << s.c_str() << '\n';
+    output_stream << s.c_str() << '\n';
     for(int i = 0; i < size1; i++)
     {
         for(int j = 0; j < size2; j++) 
         {
-            std::cout << (*this)(i, j) << delimiter;
+            output_stream << (*this)(i, j) << delimiter;
         }
-        std::cout << '\n';
+        output_stream << '\n';
     }
 }
 
@@ -185,4 +211,31 @@ matrix<T>& matrix<T>::operator/=(T x)
     for(int i = 0; i < size1*size2; i++) data[i] /= x;
     return *this;
 }
+
+matrix<double> real(matrix<std::complex<double>> N)
+{
+    matrix<double> M(N.size1, N.size2);
+    for(int i = 0; i < N.size1; i++)
+    {
+        for(int j = 0; j < N.size2; j++)
+        {
+            M(i,j) = real(N(i,j));
+        }
+    }
+    return M;
+}
+
+matrix<double> imag(matrix<std::complex<double>> N)
+{
+    matrix<double> M(N.size1, N.size2);
+    for(int i = 0; i < N.size1; i++)
+    {
+        for(int j = 0; j < N.size2; j++)
+        {
+            M(i,j) = imag(N(i,j));
+        }
+    }
+    return M;
+}
+
 
