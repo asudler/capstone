@@ -1,6 +1,6 @@
 #include <complex>
 #include <iostream>
-#include "/home/asudler/git/capstone/linalg/matrix.h"
+#include "/home/asudler/git/capstone/linalg/matrix/matrix.h"
 
 using namespace std::complex_literals;
 

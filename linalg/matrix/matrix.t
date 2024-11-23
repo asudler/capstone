@@ -99,3 +99,4 @@ matrix<T> stack(std::vector<T> v, int nrows)
     for(int i = 0; i < v.size(); i++) M.data[i] = v[i];
     return M;
 }
+
