@@ -55,6 +55,8 @@ filenames()
                 spatial_omega_base = value;
             else if(key == "omega_print") 
                 omega_print = std::stoi(value);
+            else if(key == "polaritons_base")
+                polaritons_base = value;
         }
     }
     istrm.close();
@@ -116,7 +118,7 @@ fourlevel_state::fourlevel_state(std::string inputfile) : fourlevel_state()
     
     std::ifstream istrm(inputfile.c_str());
     if(!istrm.is_open())
-        throw std::invalid_argument("FFfailed to open inputfile");
+        throw std::invalid_argument("failed to open inputfile");
     
     std::string line;
     std::regex pattern(R"((\w+)\s*:\s*((\S+)))"); // var : data # ignore
@@ -175,6 +177,14 @@ fourlevel_state::fourlevel_state(std::string inputfile) : fourlevel_state()
                 t_off2_pm = std::stod(value);
             else if(key == "tau_pm") 
                 tau_pm = std::stod(value);
+            else if(key == "g")
+                g = std::stod(value);
+            else if(key == "nn")
+                nn = std::stoi(value);
+            else if(key == "chi_m")
+                chi_m = std::stod(value);
+            else if(key == "chi_p")
+                chi_p = std::stod(value);
         }
     }
     istrm.close(); // perhaps there is a better way to do this
@@ -258,6 +268,21 @@ fourlevel_state::fourlevel_state(std::string inputfile) : fourlevel_state()
         = cubic_spline<std::complex<double>>(ts, spline_help_pi);
     cap_omega_minus_t 
         = cubic_spline<std::complex<double>>(ts, spline_help_minus);
+
+    // create mixing angle functions from beam splines
+    theta = [&](double t) 
+    { 
+        return std::atan(std::sqrt(g*g*nn/
+               (std::abs(cap_omega_plus_t.evaluate(t))
+                *std::abs(cap_omega_plus_t.evaluate(t))
+               + std::abs(cap_omega_minus_t.evaluate(t))
+                *std::abs(cap_omega_minus_t.evaluate(t)))));
+    };
+    phi = [&](double t)
+    {
+        return std::atan2(std::abs(cap_omega_minus_t.evaluate(t)),
+               std::abs(cap_omega_plus_t.evaluate(t)));
+    };
 } // parameterized constructor from input file
 
 
@@ -294,6 +319,8 @@ boundary_conditions()
                 epsilon = std::stod(value);
             else if(key == "tolerance") 
                 tolerance = std::stod(value);
+            else if(key == "nn")
+                nn = std::stoi(value);
         }
     }   
     istrm.close(); // once again maybe there's a more efficient way here...
@@ -326,6 +353,31 @@ matrix<std::complex<double>> fourlevel_state::H(double t)
 } // H(t) (time-dependent Hamiltonian)
 
 
+/* rotate:
+ * matrix for rotating from physical to polariton picture */
+matrix<std::complex<double>> fourlevel_state::rotate(double t)
+{
+    matrix<std::complex<double>> M(3,3);
+
+    M(0,0) = std::cos(theta(t)); // need to define theta, phi, nn, chi_+/-
+    M(0,1) = -std::sqrt(nn)*std::exp(1i*chi_m)*std::sin(theta(t))
+             *std::sin(phi(t));
+    M(0,2) = -std::sqrt(nn)*std::exp(1i*chi_p)*std::sin(theta(t))
+             *std::cos(phi(t));
+    M(1,0) = std::sin(theta(t));
+    M(1,1) = std::sqrt(nn)*std::exp(1i*chi_m)*std::cos(theta(t))
+             *std::sin(phi(t));
+    M(1,2) = std::sqrt(nn)*std::exp(1i*chi_p)*std::cos(theta(t))
+             *std::cos(phi(t));
+    M(2,0) = 0;
+    M(2,1) = std::sqrt(nn)*std::exp(-1i*chi_p)*std::cos(phi(t));
+    M(2,2) = -std::sqrt(nn)*std::exp(-1i*chi_m)*std::sin(phi(t));
+
+    return M;
+}
+
+
+// ARCHAIC AND WRONG! DO NOT USE
 void fourlevel_state::print_beams(std::string file)
 {
     std::ofstream f;
@@ -346,10 +398,38 @@ void fourlevel_state::print_beams(std::string file)
           << cap_omega_minus_t.evaluate(t).real() << ' '
           << cap_omega_minus_t.evaluate(t).imag() << '\n';
         t += 0.01;
+    } // WHAT ARE WE PRINTING? INTENSITY? --> should be squared
+      // RABI COUPLINGS? --> should not be called "plus beam (re)" eg
+      // BE EXACT!!!
+
+    f.close();
+}
+
+void fourlevel_state::print_rabi_couplings(std::string file)
+{
+    std::ofstream f;
+    f.open(file);
+    f << "Rabi couplings.\n"
+      << "t, Re(\\Omega_+), Im(\\Omega_+), "
+      << "Re(\\Omega_{\\pi}), Im(\\Omega_{\\pi}), "
+      << "Re(\\Omega_-), Im(\\Omega_-)\n";
+
+    double t = 0;
+    while(t < tf)
+    {
+        f << t << ' '
+          << cap_omega_plus_t.evaluate(t).real() << ' '
+          << cap_omega_plus_t.evaluate(t).imag() << ' '
+          << cap_omega_pi_t.evaluate(t).real() << ' '
+          << cap_omega_pi_t.evaluate(t).imag() << ' '
+          << cap_omega_minus_t.evaluate(t).real() << ' '
+          << cap_omega_minus_t.evaluate(t).imag() << '\n';
+        t += 0.01;
     }
 
     f.close();
 }
+
 
 std::vector<std::complex<double>> fourlevel_state::master_eq_
 (
@@ -364,9 +444,26 @@ std::vector<std::complex<double>> fourlevel_state::master_eq_
         sol(i,3) -= cap_gamma/2.*rho_matrix(i,3);
     for(int i = 0; i < sol.size2; i++)
         sol(3,i) -= cap_gamma/2.*rho_matrix(3,i);
-    sol(0,0) += cap_gamma/3.*rho_matrix(3,3);
-    sol(1,1) += cap_gamma/3.*rho_matrix(3,3);
-    sol(2,2) += cap_gamma/3.*rho_matrix(3,3);
+    if(cap_omega_minus != 0. && cap_omega_plus != 0.)
+    {
+        sol(0,0) += cap_gamma/3.*rho_matrix(3,3);
+        sol(1,1) += cap_gamma/3.*rho_matrix(3,3);
+        sol(2,2) += cap_gamma/3.*rho_matrix(3,3);
+    }
+    else if(cap_omega_minus == 0. && cap_omega_plus != 0.) 
+    {
+        sol(0,0) += cap_gamma/2.*rho_matrix(3,3);
+        sol(1,1) += cap_gamma/2.*rho_matrix(3,3);
+    }
+    else if(cap_omega_minus != 0. && cap_omega_plus == 0.)
+    {
+        sol(1,1) += cap_gamma/2.*rho_matrix(3,3);
+        sol(2,2) += cap_gamma/2.*rho_matrix(3,3);
+    }
+    else
+    {
+        sol(1,1) += cap_gamma*rho_matrix(3,3);
+    }
     return sol.unravel();
 } // master_eq, i.e. the equation of motion for the density matrix rho
 
@@ -474,3 +571,69 @@ void fourlevel_state::print_rho_log(std::string file)
     f.close();
 }
 
+
+void fourlevel_state::print_polaritons(std::string file)
+{
+    std::ofstream f;
+    f.open(file);
+    f << "PSI, PHI, and Z polaritons as functions of TIME\n"
+      << "t, Re(Psi), Im(Psi), Re(Phi), Im(Phi), Re(Z), Im(Z)\n";
+    
+    for(int i = 0; i < times.size(); i++)
+    {
+        f << times[i] << ' ';
+
+        // make a vector containing E (Omega_{pi}/g), rho23, and rho21
+        std::vector<std::complex<double>> physical_vector
+            = {cap_omega_pi_t.evaluate(times[i])/g, solutions[i][5],
+               solutions[i][7]};
+
+        // make a new vector containing Psi, Phi, and Z
+        auto polariton_vector = rotate(times[i])*physical_vector;
+
+        // print to file
+        for(int j = 0; j < polariton_vector.size(); j++)
+        {
+            f << polariton_vector[j].real() << ' ' 
+              << polariton_vector[j].imag() << ' ';
+        }
+        f << '\n';
+    }
+
+    f.close();
+}
+
+
+void fourlevel_state::print_polaritons_log(std::string file)
+{
+    std::ofstream f;
+    f.open(file);
+    f << "POLARITONS vs TIME\n"
+      << "time, [polariton], Re(polariton), Im(polariton)\n";
+    
+    for(int i = 0; i < times.size(); i++)
+    {
+        f << times[i] << '\t';
+
+        // make a vector containing E (Omega_{pi}/g), rho23, and rho21
+        std::vector<std::complex<double>> physical_vector
+            = {cap_omega_pi_t.evaluate(times[i])/g, solutions[i][5],
+               solutions[i][7]};
+
+        // make a new vector containing Psi, Phi, and Z
+        auto polariton_vector = rotate(times[i])*physical_vector;
+
+        // print to file
+        f << "[Psi] " 
+          << polariton_vector[0].real() << ' ' 
+          << polariton_vector[0].imag() << '\n'
+          << "[Phi] " 
+          << polariton_vector[1].real() << ' ' 
+          << polariton_vector[1].imag() << '\n'
+          << "[Z] " 
+          << polariton_vector[2].real() << ' ' 
+          << polariton_vector[2].imag() << '\n';
+    }
+
+    f.close();
+}

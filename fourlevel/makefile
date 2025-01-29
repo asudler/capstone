@@ -5,6 +5,7 @@ LDLIBS = -lstdc++
 SRCS = main.cc ~/git/capstone/fourlevel/fourlevel.cc \
 	   ~/git/capstone/linalg/matrix/matrix.cc \
 	   ~/git/capstone/misctools/misctools.cc \
+	   ~/git/capstone/fourlevel/spatial.cc \
 	   ~/git/capstone/spline/spline.cc
 
 OBJS = $(SRCS:.cc=.o)

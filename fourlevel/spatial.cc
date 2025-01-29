@@ -75,6 +75,7 @@ std::vector<fourlevel_state> spatial_solve
           << '\n';
         f.close();
     }
+    /* actually, we don't want to do this beyond testing purposes (probably)
     if(files.spatial_omega_base != "") // write omega0 to file
     {
         std::ofstream omega_file_re;
@@ -88,6 +89,7 @@ std::vector<fourlevel_state> spatial_solve
         omega_file_re.close();
         omega_file_im.close();
     }
+    */
 
     double dxi = (bc.xi_max - bc.xi_min)/(bc.nxi - 1.);
     int counter = 0;
@@ -147,6 +149,7 @@ std::vector<fourlevel_state> spatial_solve
               << "\n";    
             f.close();
         }
+        /* again, probably don't want this...
         if(counter % files.omega_print == 0) // print omega1 to files
         {                                    // both real and imag parts
             std::string index = std::to_string(counter);
@@ -165,6 +168,7 @@ std::vector<fourlevel_state> spatial_solve
             omega_file_re.close();
             omega_file_im.close();
         }
+        */
         if(files.spatial_rho_xif_log != "")
             states0[bc.nxi - 1].print_rho_log(files.spatial_rho_xif_log);
         if(norm < bc.tolerance) // consider "normalizing" lol

@@ -1,0 +1,173 @@
+## inputfile to initialize state variables
+## if the comment begins with !, then providing an input value is necessary
+## otherwise, the variable will be initialized with default args
+
+rho0_re : in.rho0_re.dat        # initial density matrix state, real part
+                                # default zeros
+                                # filename (string)
+                                # ! both real and imag parts must be provided
+rho0_im : in.rho0_im.dat        # initial density matrix state, imag part
+                                # default zeros
+                                # filename (string)
+
+hbar : 1.                       # planck's constant
+                                # default 1.
+                                # double
+
+cap_gamma : 38.107518888        # decay rate constant \Gamma
+                                # default 0.
+                                # double
+
+cap_omega_plus : 34.5575191895  # \Omega_+, coupling between levels 1 and 4
+                                # default 0.
+                                # double
+
+cap_omega_pi : 15.7079632679    # \Omega_{\pi}, coupling between levels 2 and 4
+                                # default 0.
+                                # double
+
+cap_omega_minus : 0.            # \Omega_-, coupling between levels 3 and 4
+                                # default 0.
+                                # double
+
+cap_delta_B : 0.                # ground level Zeeman energy shift
+                                # default 0.
+                                # double
+
+cap_delta_pi : 0.               # ???
+                                # default 0.
+                                # double
+
+cap_delta_plus : 0.             # ???
+                                # default 0.
+                                # double 
+
+cap_delta_upper : 0.            # ???
+                                # default 0.
+                                # double                                
+                                                               
+ti : 0.                         # initial simulation time
+                                # default 0.
+                                # double
+
+tf : 5.5                        # final simulation time
+                                # default 0.
+                                # double
+                                
+dt : 0.100                      # timestep for solution
+                                # default 0.01
+                                # double
+
+nt : 1500                       # number of timesteps, i.e. dt = tf/(nt - 1)
+                                # default 0, but if non-zero it overrides dt
+                                # int
+
+const_dt : 0                    # if true, use simple RK4 solver with 
+                                # h = dt or h = tf/(nt - 1) (see above)
+                                # boolean (0 or 1)
+
+t_on_pi : 2.49                  # beam activation time
+                                # default 0.
+                                # double
+                                
+t_off_pi : 2.49                 # beam deactivation time
+                                # default 0.
+                                # double
+                                
+tau_pi : 0.113                  # beam activation time width
+                                # default 0. 
+                                # double
+
+t_on1_pm : 1.                   # ???
+                                # default 0. 
+                                # double
+
+t_off1_pm : 2.4                 # ???
+                                # default 0.
+                                # double
+
+t_on2_pm : 3.5                  # ???
+                                # default 0. 
+                                # double
+
+t_off2_pm : 4.9                 # ???
+                                # default 0.
+                                # double
+
+tau_pm : 0.17                   # beam
+                                # default 0. 
+                                # double
+
+g : 1.                          # coupling strength
+                                # no default
+                                # double
+
+chi_p : 0.                      # phase for plus beam
+                                # no default
+                                # double
+
+chi_m : 0.                      # phase for minus beam
+                                # no default
+                                # double
+                                
+xi_min : 0.                     # first xi point for medium
+                                # default 0.
+                                # double
+
+xi_max : 0.00001                # last xi point for medium
+                                # default 0.
+                                # double
+
+nxi : 500                       # number of xi points   dxi = (xi_max - xi_min)
+                                # default 0.                  / (nxi - 1)
+                                # int
+
+nn : 1E3                        # number of atoms in atomic medium
+                                # no default
+                                # int
+
+mu_alpha : 1E4                  # mu_alpha, permitivity of medium
+                                # default 0.
+                                # double
+
+epsilon : 0.7                   # damping for pi-beam finite diff. calculation
+                                # default 0., should lie in [0,1)
+                                # double
+
+tolerance : 1E-3                # tolerance for pi-beam diff. calculation
+                                # default 0.
+                                # double
+
+## filenames and other file properties below
+
+beams : out.beams.log                       # beam sequence filename
+                                            # logfile but could also be used
+                                            # easily for plotting
+
+rho : out.rho.dat                           # rho matrix print filename
+                                            # bare matrix
+                                            # harder to plot
+
+rho_log : out.rho.log                       # rho matrix log filename
+                                            # logfile (easier debug)
+
+spatial_log : out.spatial.log               # spatial finite diff. log
+                                            # logfile
+
+spatial_rho_xii_log : out.rho_xii.log       # spatial xi = xi_min logfile
+                                            # OBSOLETE?
+
+spatial_rho_xif_log : out.rho_xif.log       # spatial xi = xi_max logfile
+                                            # overwritten each iteration
+                                            # OBSOLETE?
+
+spatial_omega_base : out.omega_pi           # spatial omega base filename
+                                            # appended by _<4 digit index>
+                                            # _<re or im>.log (logfile)
+
+omega_print : 10                            # print \Omega_{pi} every n iter.
+                                            # should be nonzero if the
+                                            # filename above exists
+                                            # OBSOLETE?
+
+polaritons_base : out.polaritons            # polaritons base filename
