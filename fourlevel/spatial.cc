@@ -36,6 +36,12 @@ std::vector<fourlevel_state> spatial_solve
     for(int i = 0; i < bc.nxi; i++)
     {
         states0[i] = state;
+        // read \Omega_{\pi} from file
+        // needs to be tested
+        if(true /*change later*/)
+        {
+            auto 
+        } 
         states0[i].solve();
     }
 
