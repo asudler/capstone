@@ -1,0 +1,3 @@
+* test polariton functionality
+* make "solutions" a spline instead of a vector (so that one has the flexibility to print the density matrix/polaritons at variable times)
+--> actually, it already is a spline, it can be controlled with nt...

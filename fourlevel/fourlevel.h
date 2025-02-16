@@ -38,6 +38,7 @@ struct fourlevel_state
     std::function<double(double)> theta, phi;
     std::vector<double> times;
     std::vector<std::vector<std::complex<double>>> solutions;
+//    std::vector<cubic_spline<std::complex<double>>> solutions_spline;
 
     double hbar, cap_gamma, cap_omega_plus, cap_omega_pi, cap_omega_minus, 
            cap_delta_B, cap_delta_pi, cap_delta_plus, cap_delta_upper, ti,

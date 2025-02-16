@@ -109,7 +109,8 @@ std::vector<fourlevel_state> spatial_solve
             for(int j = 0; j < ts.size(); j++)
             {
                 omega1(i+1,j) = omega0(i,j)
-                    + 1i*dxi*bc.mu_alpha*states0[i].solutions[j][7]; // rho24
+                    - 1i*dxi*bc.mu_alpha*states0[i].solutions[j][7]; // rho24
+                //  ^ "+" sign used in Shan calculations 2025-02-04.
             }
         }
 

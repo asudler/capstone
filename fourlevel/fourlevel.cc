@@ -521,6 +521,13 @@ void fourlevel_state::solve()
             solutions = ys;
         }
     }
+
+//    // also spline the rho solution
+//    for(std::vector<std::complex<double>> sol : solutions)
+//    {
+//        auto help_spline = cubic_spline<std::complex<double>>(times, sol);
+//        solutions_spline.push_back(help
+//    }
 } // solve, i.e. solution via numerical ode methods
 
 
