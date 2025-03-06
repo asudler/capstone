@@ -18,19 +18,19 @@ cap_gamma : 38.107518888        # decay rate constant \Gamma
                                 # default 0.
                                 # double
 
-cap_omega_plus : 34.5575191895  # \Omega_+, coupling between levels 1 and 4
+cap_omega_plus : 34.558         # \Omega_+, coupling between levels 1 and 4
                                 # default 0.
                                 # double
 
-cap_omega_pi : 15.7079632679    # \Omega_{\pi}, coupling between levels 2 and 4
+cap_omega_pi : 15.708           # \Omega_{\pi}, coupling between levels 2 and 4
                                 # default 0.
                                 # double
 
-cap_omega_minus : 0.            # \Omega_-, coupling between levels 3 and 4
+cap_omega_minus : 34.558        # \Omega_-, coupling between levels 3 and 4
                                 # default 0.
                                 # double
 
-cap_delta_B : 0.                # ground level Zeeman energy shift
+cap_delta_B : 0.628                # ground level Zeeman energy shift
                                 # default 0.
                                 # double
 
@@ -50,7 +50,7 @@ ti : 0.                         # initial simulation time
                                 # default 0.
                                 # double
 
-tf : 5.5                        # final simulation time
+tf : 6.5                        # final simulation time
                                 # default 0.
                                 # double
                                 
@@ -66,35 +66,35 @@ const_dt : 0                    # if true, use simple RK4 solver with
                                 # h = dt or h = tf/(nt - 1) (see above)
                                 # boolean (0 or 1)
 
-t_on_pi : 2.49                  # beam activation time
+t_on_pi : 3.041                 # beam activation time
                                 # default 0.
                                 # double
                                 
-t_off_pi : 2.49                 # beam deactivation time
+t_off_pi : 3.041                # beam deactivation time
                                 # default 0.
                                 # double
                                 
-tau_pi : 0.113                  # beam activation time width
+tau_pi : 0.110                  # beam activation time width
                                 # default 0. 
                                 # double
 
-t_on1_pm : 1.                   # ???
+t_on1_pm : 1.740                # ???
                                 # default 0. 
                                 # double
 
-t_off1_pm : 2.4                 # ???
+t_off1_pm : 2.946               # ???
                                 # default 0.
                                 # double
 
-t_on2_pm : 3.5                  # ???
+t_on2_pm : 3.861                # ???
                                 # default 0. 
                                 # double
 
-t_off2_pm : 4.9                 # ???
+t_off2_pm : 5.846               # ???
                                 # default 0.
                                 # double
 
-tau_pm : 0.17                   # beam
+tau_pm : 0.147                  # beam
                                 # default 0. 
                                 # double
 
@@ -122,11 +122,11 @@ nxi : 500                       # number of xi points   dxi = (xi_max - xi_min)
                                 # default 0.                  / (nxi - 1)
                                 # int
 
-nn : 1E3                        # number of atoms in atomic medium
+nn : 1                          # number of atoms in atomic medium
                                 # no default
                                 # int
 
-mu_alpha : 1E4                  # mu_alpha, permitivity of medium
+mu_alpha : 5E6                  # mu_alpha, permitivity of medium
                                 # default 0.
                                 # double
 
@@ -140,7 +140,7 @@ tolerance : 1E-3                # tolerance for pi-beam diff. calculation
 
 ## filenames and other file properties below
 
-beams : out.beams.log                       # beam sequence filename
+beams : out.rabi_couplings.log              # beam sequence filename
                                             # logfile but could also be used
                                             # easily for plotting
 
@@ -171,3 +171,8 @@ omega_print : 10                            # print \Omega_{pi} every n iter.
                                             # OBSOLETE?
 
 polaritons_base : out.polaritons            # polaritons base filename
+
+physical_grid : out.physical_grid.dat
+physical_grid_lite : out.physical_grid_lite.dat
+polariton_grid : out.polariton_grid.dat
+physical_grid_check : out.physical_grid_check.dat

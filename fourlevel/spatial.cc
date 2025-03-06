@@ -4,9 +4,10 @@
 #include <iomanip>
 #include <iostream>
 #include <string>
-#include "fourlevel.h"
+#include "/home/asudler/git/capstone/fourlevel/fourlevel.h"
 #include "spatial.h"
 #include "/home/asudler/git/capstone/linalg/matrix/matrix.h"
+#include "/home/asudler/git/capstone/misctools/misctools.h"
 #include "/home/asudler/git/capstone/spline/spline.h"
 
 using namespace std::complex_literals;
@@ -35,13 +36,7 @@ std::vector<fourlevel_state> spatial_solve
     std::vector<fourlevel_state> states0(bc.nxi);
     for(int i = 0; i < bc.nxi; i++)
     {
-        states0[i] = state;
-        // read \Omega_{\pi} from file
-        // needs to be tested
-        // if(true /*change later*/)
-        // {
-        //     auto 
-        // } 
+        states0[i] = state;        
         states0[i].solve();
     }
 
@@ -175,7 +170,7 @@ std::vector<fourlevel_state> spatial_solve
             omega_file_re.close();
             omega_file_im.close();
         }
-        */
+        // end long comment here*/
         if(files.spatial_rho_xif_log != "")
             states0[bc.nxi - 1].print_rho_log(files.spatial_rho_xif_log);
         if(norm < bc.tolerance) // consider "normalizing" lol
@@ -186,4 +181,214 @@ std::vector<fourlevel_state> spatial_solve
         omega0 = omega1.copy();
         states0 = states1;
     }
+    // for testing purposes
+    //return states0;
 } // spatial_solve
+
+
+/* spatial_print:
+ * print a nice gnuplot friendly grid
+ * of the physical picture parameters */
+void spatial_print
+(
+    std::vector<fourlevel_state> states,
+    boundary_conditions bc,
+    filenames files
+)
+{
+    // Format:
+    // \xi', \tau, Re(\Omega_{\pi}), Im(\Omega_{\pi}),
+    // Re(\rho_{ij}), Im(rho_{ij}) (i,j=1..4)
+    std::ofstream f;
+    f.precision(15);
+    f.open(files.physical_grid);
+    f << "\\xi', \\tau, Re(\\Omega_{\\pi}), Im(\\Omega_{\\pi}), "
+      << "Re(\\rho_{ij}), Im(rho_{ij}) (i,j=1..4)\n\n";
+    
+    double dxi = (bc.xi_max - bc.xi_min)/(bc.nxi - 1.);
+    double xi = 0.;
+    
+    for(auto state : states)
+    {
+        for(int ti = 0; ti < state.times.size(); ti++)
+        {
+            f << xi << '\t' << state.times[ti] << '\t'
+              << state.cap_omega_pi_t.evaluate(state.times[ti]).real() << '\t'
+              << state.cap_omega_pi_t.evaluate(state.times[ti]).imag() << '\t';
+            for(int i = 0; i < state.rho0.size1*state.rho0.size2; i++)
+            {
+                f << state.solutions[ti][i].real() << '\t'
+                  << state.solutions[ti][i].imag() << '\t';
+            }
+            f << '\n';
+        }
+        f << '\n';
+        xi += dxi;
+    }
+
+    // job done! Hopefully! :)
+    f.close();
+}
+
+
+/* spatial_print_lite:
+ * print a nice gnuplot friendly grid
+ * of the physical picture parameters 
+ * but also just some coherences of rho */
+void spatial_print_lite
+(
+    std::vector<fourlevel_state> states,
+    boundary_conditions bc,
+    filenames files
+)
+{
+    // Format:
+    // \xi', \tau, Re(\Omega_{\pi}), Im(\Omega_{\pi}),
+    // Re(\rho_{ij}), Im(rho_{ij}) (just 21,23,13)
+    std::ofstream f;
+    f.precision(15);
+    f.open(files.physical_grid_lite);
+    f << "\\xi', \\tau, Re(\\Omega_{\\pi}), Im(\\Omega_{\\pi}), "
+      << "Re(\\rho_{}), Im(rho_{ij}) (ij=21,23,13)\n\n";
+    
+    double dxi = (bc.xi_max - bc.xi_min)/(bc.nxi - 1.);
+    double xi = 0.;
+    
+    for(auto state : states)
+    {
+        for(int ti = 0; ti < state.times.size(); ti++)
+        {
+            f << xi << '\t' << state.times[ti] << '\t'
+              << state.cap_omega_pi_t.evaluate(state.times[ti]).real() << '\t'
+              << state.cap_omega_pi_t.evaluate(state.times[ti]).imag() << '\t'
+              << state.solutions[ti][5].real() << '\t'
+              << state.solutions[ti][5].imag() << '\t'
+              << state.solutions[ti][7].real() << '\t'
+              << state.solutions[ti][7].imag() << '\t'
+              << state.solutions[ti][3].real() << '\t'
+              << state.solutions[ti][3].imag() << '\t'
+              << '\n';
+        }
+        f << '\n';
+        xi += dxi;
+    }
+
+    // job done! Hopefully! :)
+    f.close();
+}
+
+
+/* spatial_read:
+ * generate a grid of spatial states
+ * from a file formatted the way that the spatial_print function
+ * outputs its data */
+std::vector<fourlevel_state> spatial_read
+(
+    std::string inputfile,
+    boundary_conditions bc,
+    filenames files
+)
+{
+    auto data = read(files.physical_grid, '\t', 2);
+    double z = 0;
+    std::vector<double> times_help;
+    std::vector<std::complex<double>> cap_omega_pi_help;
+    std::vector<std::vector<std::complex<double>>> solutions_help;
+    std::vector<fourlevel_state> states;
+
+    for(auto line : data)
+    {
+        if(z != line[0])
+        {
+            fourlevel_state state(inputfile);
+            state.times = times_help;
+            state.solutions = solutions_help;
+            state.cap_omega_pi_t = cubic_spline<std::complex<double>>
+                (state.times, cap_omega_pi_help);
+            states.push_back(state);
+
+            // Remove items from vectors
+            times_help.clear();
+            solutions_help.clear();
+            cap_omega_pi_help.clear();
+
+            // Get new z
+            z = line[0];
+        }
+
+        times_help.push_back(line[1]);
+        cap_omega_pi_help.push_back(line[2] + 1i*line[3]);
+        std::vector<std::complex<double>> solutions_row_help;
+        for(int i = 0; i < 16; i++)
+        {
+            solutions_row_help.push_back(line[4 + 2*i] + 1i*line[5 + 2*i]);
+        }
+        solutions_help.push_back(solutions_row_help);
+    }
+
+    return states;
+}
+
+
+/* rotate:
+ * read spatially-dependent physical data
+ * rotate to polariton picture
+ * print result */
+void rotate(fourlevel_state state, filenames files)
+{
+    auto physical_zt = read(files.physical_grid, '\t', 1);
+    std::ofstream f;
+    f.open(files.polariton_grid);
+    f << "t,z,Re[\\Psi/sqrt(nn)],Im[\\Psi/sqrt(nn)],"
+      << "Re[\\Phi/sqrt(nn)],Im[\\Psi/sqrt(nn)],"
+      << "Re[Z/sqrt(nn)],Im[Z/sqrt(nn)]\n";
+
+    double z = 0;
+    for(auto line : physical_zt)
+    {
+        if(line[0] != z) f << '\n';
+        std::vector<std::complex<double>> rhs = {
+            line[2] + 1i*line[3], line[4] + 1i*line[5], line[6] + 1i*line[7]
+        };
+
+        z = line[0];
+        auto lhs = state.rotate(line[1])*rhs;
+        f << z << '\t' << line[1] << '\t'
+          << lhs[0].real() << '\t' << lhs[0].imag() << '\t'
+          << lhs[1].real() << '\t' << lhs[1].imag() << '\t'
+          << lhs[2].real() << '\t' << lhs[2].imag() << '\n';
+    }
+    f.close();
+}
+
+
+/* unrotate:
+ * read spatially-dependent polariton data
+ * rotate to physical picture
+ * print result */
+void unrotate(fourlevel_state state, filenames files)
+{
+    auto polariton_zt = read(files.polariton_grid, '\t', 1);
+    std::ofstream f;
+    f.open(files.physical_grid_check);
+    f << "t,z,Re[\\Omega_{\\pi}],Im[\\Omega_{\\pi}],"
+      << "Re[\\rho_{23}],Im[\\rho_{23}],"
+      << "Re[\\rho_{21}],Im[\\rho_{21}]\n";
+
+    double z = 0;
+    for(auto line : polariton_zt)
+    {
+        if(line[0] != z) f << '\n';
+        std::vector<std::complex<double>> rhs = {
+            line[2] + 1i*line[3], line[4] + 1i*line[5], line[6] + 1i*line[7]
+        };
+        
+        z = line[0];
+        auto lhs = state.unrotate(line[1])*rhs;
+        f << z << '\t' << line[1] << '\t'
+          << lhs[0].real() << '\t' << lhs[0].imag() << '\t'
+          << lhs[1].real() << '\t' << lhs[1].imag() << '\t'
+          << lhs[2].real() << '\t' << lhs[2].imag() << '\n';
+    }
+    f.close();
+}

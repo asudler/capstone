@@ -20,7 +20,8 @@ using namespace std::complex_literals;
 
 filenames::filenames() : beams(""), rho(""), rho_log(""), spatial_log(""), 
     spatial_rho_xii_log(""), spatial_rho_xif_log(""), spatial_omega_base(""),
-    omega_print(0) {}
+    physical_grid(""), polariton_grid(""), physical_grid_check(""), 
+    physical_grid_lite(""), omega_print(0) {}
 
 
 filenames::filenames(std::string inputfile) :
@@ -57,6 +58,14 @@ filenames()
                 omega_print = std::stoi(value);
             else if(key == "polaritons_base")
                 polaritons_base = value;
+            else if(key == "physical_grid")
+                physical_grid = value;
+            else if(key == "physical_grid_lite")
+                physical_grid_lite = value;
+            else if(key == "polariton_grid")
+                polariton_grid = value;
+            else if(key == "physical_grid_check")
+                physical_grid_check = value;
         }
     }
     istrm.close();
@@ -180,7 +189,7 @@ fourlevel_state::fourlevel_state(std::string inputfile) : fourlevel_state()
             else if(key == "g")
                 g = std::stod(value);
             else if(key == "nn")
-                nn = std::stoi(value);
+                nn = std::stod(value);
             else if(key == "chi_m")
                 chi_m = std::stod(value);
             else if(key == "chi_p")
@@ -270,6 +279,7 @@ fourlevel_state::fourlevel_state(std::string inputfile) : fourlevel_state()
         = cubic_spline<std::complex<double>>(ts, spline_help_minus);
 
     // create mixing angle functions from beam splines
+    /*
     theta = [&](double t) 
     { 
         return std::atan(std::sqrt(g*g*nn/
@@ -277,6 +287,16 @@ fourlevel_state::fourlevel_state(std::string inputfile) : fourlevel_state()
                 *std::abs(cap_omega_plus_t.evaluate(t))
                + std::abs(cap_omega_minus_t.evaluate(t))
                 *std::abs(cap_omega_minus_t.evaluate(t)))));
+    };*/
+    theta = [&](double t) 
+    { 
+        return std::atan2(
+            std::sqrt(g*g*nn),
+            std::sqrt(std::abs(cap_omega_plus_t.evaluate(t))
+            *std::abs(cap_omega_plus_t.evaluate(t))
+            + std::abs(cap_omega_minus_t.evaluate(t))
+            *std::abs(cap_omega_minus_t.evaluate(t)))
+        );
     };
     phi = [&](double t)
     {
@@ -359,19 +379,35 @@ matrix<std::complex<double>> fourlevel_state::rotate(double t)
 {
     matrix<std::complex<double>> M(3,3);
 
-    M(0,0) = std::cos(theta(t)); // need to define theta, phi, nn, chi_+/-
-    M(0,1) = -std::sqrt(nn)*std::exp(1i*chi_m)*std::sin(theta(t))
-             *std::sin(phi(t));
-    M(0,2) = -std::sqrt(nn)*std::exp(1i*chi_p)*std::sin(theta(t))
-             *std::cos(phi(t));
-    M(1,0) = std::sin(theta(t));
-    M(1,1) = std::sqrt(nn)*std::exp(1i*chi_m)*std::cos(theta(t))
-             *std::sin(phi(t));
-    M(1,2) = std::sqrt(nn)*std::exp(1i*chi_p)*std::cos(theta(t))
-             *std::cos(phi(t));
+    M(0,0) = std::cos(theta(t))/g/std::sqrt(nn);
+    M(0,1) = -std::exp(1i*chi_m)*std::sin(theta(t))*std::sin(phi(t));
+    M(0,2) = -std::exp(1i*chi_p)*std::sin(theta(t))*std::cos(phi(t));
+    M(1,0) = std::sin(theta(t))/g/std::sqrt(nn);
+    M(1,1) = std::exp(1i*chi_m)*std::cos(theta(t))*std::sin(phi(t));
+    M(1,2) = std::exp(1i*chi_p)*std::cos(theta(t))*std::cos(phi(t));
     M(2,0) = 0;
-    M(2,1) = std::sqrt(nn)*std::exp(-1i*chi_p)*std::cos(phi(t));
-    M(2,2) = -std::sqrt(nn)*std::exp(-1i*chi_m)*std::sin(phi(t));
+    M(2,1) = std::exp(-1i*chi_p)*std::cos(phi(t));
+    M(2,2) = -std::exp(-1i*chi_m)*std::sin(phi(t));
+
+    return M;
+}
+
+
+/* unrotate:
+ * matrix for rotating from polariton to physical picture */
+matrix<std::complex<double>> fourlevel_state::unrotate(double t)
+{
+    matrix<std::complex<double>> M(3,3);
+
+    M(0,0) = g*std::sqrt(nn)*std::cos(theta(t));
+    M(0,1) = g*std::sqrt(nn)*std::sin(theta(t));
+    M(0,2) = 0;
+    M(1,0) = -std::exp(-1i*chi_m)*std::sin(theta(t))*std::sin(phi(t));
+    M(1,1) = std::exp(-1i*chi_m)*std::cos(theta(t))*std::sin(phi(t));
+    M(1,2) = std::exp(1i*chi_p)*std::cos(phi(t));
+    M(2,0) = -std::exp(-1i*chi_p)*std::sin(theta(t))*std::cos(phi(t));
+    M(2,1) = std::exp(-1i*chi_p)*std::cos(theta(t))*std::cos(phi(t));
+    M(2,2) = -std::exp(1i*chi_m)*std::cos(phi(t));
 
     return M;
 }
@@ -412,7 +448,8 @@ void fourlevel_state::print_rabi_couplings(std::string file)
     f << "Rabi couplings.\n"
       << "t, Re(\\Omega_+), Im(\\Omega_+), "
       << "Re(\\Omega_{\\pi}), Im(\\Omega_{\\pi}), "
-      << "Re(\\Omega_-), Im(\\Omega_-)\n";
+      << "Re(\\Omega_-), Im(\\Omega_-), "
+      << "\\theta, \\phi\n";
 
     double t = 0;
     while(t < tf)
@@ -423,7 +460,8 @@ void fourlevel_state::print_rabi_couplings(std::string file)
           << cap_omega_pi_t.evaluate(t).real() << ' '
           << cap_omega_pi_t.evaluate(t).imag() << ' '
           << cap_omega_minus_t.evaluate(t).real() << ' '
-          << cap_omega_minus_t.evaluate(t).imag() << '\n';
+          << cap_omega_minus_t.evaluate(t).imag() << ' '
+          << theta(t) << ' ' << phi(t) << '\n';
         t += 0.01;
     }
 

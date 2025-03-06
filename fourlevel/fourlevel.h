@@ -9,7 +9,8 @@
 struct filenames
 {
     std::string beams, rho, rho_log, spatial_log, spatial_rho_xii_log,
-        spatial_rho_xif_log, spatial_omega_base, polaritons_base;
+        spatial_rho_xif_log, spatial_omega_base, polaritons_base,
+        physical_grid, physical_grid_lite, polariton_grid, physical_grid_check;
     int omega_print;
 
     filenames();
@@ -32,7 +33,8 @@ struct boundary_conditions
 
 struct fourlevel_state
 {
-    matrix<std::complex<double>> H(double), rotate(double), rho0;
+    matrix<std::complex<double>> H(double), rotate(double), unrotate(double),
+        rho0;
     cubic_spline<std::complex<double>> cap_omega_plus_t, cap_omega_pi_t,
         cap_omega_minus_t;
     std::function<double(double)> theta, phi;
@@ -43,8 +45,8 @@ struct fourlevel_state
     double hbar, cap_gamma, cap_omega_plus, cap_omega_pi, cap_omega_minus, 
            cap_delta_B, cap_delta_pi, cap_delta_plus, cap_delta_upper, ti,
            tf, dt, t_on_pi, t_off_pi, tau_pi, t_on1_pm, t_off1_pm, 
-           t_on2_pm, t_off2_pm, tau_pm, t_B_on, g, chi_m, chi_p;
-    int nt, const_dt, nn;
+           t_on2_pm, t_off2_pm, tau_pm, t_B_on, g, nn, chi_m, chi_p;
+    int nt, const_dt;
 
     fourlevel_state(); // default constructor
     fourlevel_state
