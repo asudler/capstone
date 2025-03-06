@@ -1,7 +1,7 @@
 #ifndef SPATIAL_H
 #define SPATIAL_H
 
-#include "../fourlevel.h"
+#include "/home/asudler/git/capstone/fourlevel/fourlevel.h"
 
 std::vector<fourlevel_state> spatial_solve
 (
