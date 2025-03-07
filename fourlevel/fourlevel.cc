@@ -194,6 +194,16 @@ fourlevel_state::fourlevel_state(std::string inputfile) : fourlevel_state()
                 chi_m = std::stod(value);
             else if(key == "chi_p")
                 chi_p = std::stod(value);
+            else if(key == "use_tanh")
+                use_tanh = std::stoi(value);
+            else if(key == "rise1")
+                rise1 = std::stod(value);
+            else if(key == "fall1")
+                fall1 = std::stod(value);
+            else if(key == "rise2")
+                rise2 = std::stod(value);
+            else if(key == "fall2")
+                fall2 = std::stod(value);
         }
     }
     istrm.close(); // perhaps there is a better way to do this
@@ -215,59 +225,79 @@ fourlevel_state::fourlevel_state(std::string inputfile) : fourlevel_state()
             *exp(-0.5*(t - t_on_pi)*(t - t_on_pi)/tau_pi/tau_pi);
         spline_help_pi.push_back(help);
 
-        if(t < t_on1_pm)
+        if(use_tanh == 1)
         {
-            help = cap_omega_plus
-                *exp(-0.5*(t - t_on1_pm)*(t - t_on1_pm)
-                /tau_pm/tau_pm);
+            help = 0.5*cap_omega_plus*(
+                    std::tanh(rise1*(t - t_on1_pm))
+                    - std::tanh(fall1*(t - t_off1_pm))
+                    + std::tanh(rise2*(t - t_on2_pm))
+                    - std::tanh(fall2*(t - t_off2_pm))
+                   );
             spline_help_plus.push_back(help);
-            help = cap_omega_minus
-                *exp(-0.5*(t - t_on1_pm)*(t - t_on1_pm)
-                /tau_pm/tau_pm);
+            help = 0.5*cap_omega_plus*(
+                    std::tanh(rise1*(t - t_on1_pm))
+                    - std::tanh(fall1*(t - t_off1_pm))
+                    + std::tanh(rise2*(t - t_on2_pm))
+                    - std::tanh(fall2*(t - t_off2_pm))
+                   );
             spline_help_minus.push_back(help);
         }
-        else if(t >= t_on1_pm && t < t_off1_pm)
+        else 
         {
-            spline_help_plus.push_back(cap_omega_plus);
-            spline_help_minus.push_back(cap_omega_minus);
-        }
-        else if(t >= t_off1_pm && t < (t_off1_pm + t_on2_pm)/2.)
-        {
-            help = cap_omega_plus
-                *exp(-0.5*(t - t_off1_pm)*(t - t_off1_pm)
-                /tau_pm/tau_pm);
-            spline_help_plus.push_back(help);
-            help = cap_omega_minus
-                *exp(-0.5*(t - t_off1_pm)*(t - t_off1_pm)
-                /tau_pm/tau_pm);
-            spline_help_minus.push_back(help);
-        }
-        else if(t >= (t_off1_pm + t_on2_pm)/2. && t < t_on2_pm)
-        {
-            help = cap_omega_plus
-                *exp(-0.5*(t - t_on2_pm)*(t - t_on2_pm)
-                /tau_pm/tau_pm);
-            spline_help_plus.push_back(help);
-            help = cap_omega_minus
-                *exp(-0.5*(t - t_on2_pm)*(t - t_on2_pm)
-                /tau_pm/tau_pm);
-            spline_help_minus.push_back(help);
-        }
-        else if(t >= t_on2_pm && t < t_off2_pm)
-        {
-            spline_help_plus.push_back(cap_omega_plus);
-            spline_help_minus.push_back(cap_omega_minus);
-        }
-        else if(t >= t_off2_pm)
-        {
-            help = cap_omega_plus
-                *exp(-0.5*(t - t_off2_pm)*(t - t_off2_pm)
-                /tau_pm/tau_pm);
-            spline_help_plus.push_back(help);
-            help = cap_omega_minus
-                *exp(-0.5*(t - t_off2_pm)*(t - t_off2_pm)
-                /tau_pm/tau_pm);
-            spline_help_minus.push_back(help);
+            if(t < t_on1_pm)
+            {
+                help = cap_omega_plus
+                    *exp(-0.5*(t - t_on1_pm)*(t - t_on1_pm)
+                    /tau_pm/tau_pm);
+                spline_help_plus.push_back(help);
+                help = cap_omega_minus
+                    *exp(-0.5*(t - t_on1_pm)*(t - t_on1_pm)
+                    /tau_pm/tau_pm);
+                spline_help_minus.push_back(help);
+            }
+            else if(t >= t_on1_pm && t < t_off1_pm)
+            {
+                spline_help_plus.push_back(cap_omega_plus);
+                spline_help_minus.push_back(cap_omega_minus);
+            }
+            else if(t >= t_off1_pm && t < (t_off1_pm + t_on2_pm)/2.)
+            {
+                help = cap_omega_plus
+                    *exp(-0.5*(t - t_off1_pm)*(t - t_off1_pm)
+                    /tau_pm/tau_pm);
+                spline_help_plus.push_back(help);
+                help = cap_omega_minus
+                    *exp(-0.5*(t - t_off1_pm)*(t - t_off1_pm)
+                    /tau_pm/tau_pm);
+                spline_help_minus.push_back(help);
+            }
+            else if(t >= (t_off1_pm + t_on2_pm)/2. && t < t_on2_pm)
+            {
+                help = cap_omega_plus
+                    *exp(-0.5*(t - t_on2_pm)*(t - t_on2_pm)
+                    /tau_pm/tau_pm);
+                spline_help_plus.push_back(help);
+                help = cap_omega_minus
+                    *exp(-0.5*(t - t_on2_pm)*(t - t_on2_pm)
+                    /tau_pm/tau_pm);
+                spline_help_minus.push_back(help);
+            }
+            else if(t >= t_on2_pm && t < t_off2_pm)
+            {
+                spline_help_plus.push_back(cap_omega_plus);
+                spline_help_minus.push_back(cap_omega_minus);
+            }
+            else if(t >= t_off2_pm)
+            {
+                help = cap_omega_plus
+                    *exp(-0.5*(t - t_off2_pm)*(t - t_off2_pm)
+                    /tau_pm/tau_pm);
+                spline_help_plus.push_back(help);
+                help = cap_omega_minus
+                    *exp(-0.5*(t - t_off2_pm)*(t - t_off2_pm)
+                    /tau_pm/tau_pm);
+                spline_help_minus.push_back(help);
+            }
         }
     }
 

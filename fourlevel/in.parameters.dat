@@ -78,19 +78,19 @@ tau_pi : 0.110                  # beam activation time width
                                 # default 0. 
                                 # double
 
-t_on1_pm : 1.740                # ???
+t_on1_pm : 1.564                # ???
                                 # default 0. 
                                 # double
 
-t_off1_pm : 2.946               # ???
+t_off1_pm : 3.082               # ???
                                 # default 0.
                                 # double
 
-t_on2_pm : 3.561                # ???
+t_on2_pm : 3.365                # ???
                                 # default 0. 
                                 # double
 
-t_off2_pm : 4.767               # ???
+t_off2_pm : 4.883               # ???
                                 # default 0.
                                 # double
 
@@ -176,3 +176,16 @@ physical_grid : out.physical_grid.dat
 physical_grid_lite : out.physical_grid_lite.dat
 polariton_grid : out.polariton_grid.dat
 physical_grid_check : out.physical_grid_check.dat
+
+## Hyperbolic tangent fit
+# the t1on, t1off, etc parameters come from above
+
+use_tanh : 1                            # Use tanh function for
+                                        # control beam spline
+                                        # either 1 (true) or not 1 (false)
+                                        # Will override gaussian timesequence
+
+rise1 : 11.837
+fall1 : 11.880
+rise2 : 11.867
+fall2 : 11.925                              

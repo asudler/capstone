@@ -45,8 +45,9 @@ struct fourlevel_state
     double hbar, cap_gamma, cap_omega_plus, cap_omega_pi, cap_omega_minus, 
            cap_delta_B, cap_delta_pi, cap_delta_plus, cap_delta_upper, ti,
            tf, dt, t_on_pi, t_off_pi, tau_pi, t_on1_pm, t_off1_pm, 
-           t_on2_pm, t_off2_pm, tau_pm, t_B_on, g, nn, chi_m, chi_p;
-    int nt, const_dt;
+           t_on2_pm, t_off2_pm, tau_pm, t_B_on, g, nn, chi_m, chi_p,
+           rise1, fall1, rise2, fall2;
+    int nt, const_dt, use_tanh;
 
     fourlevel_state(); // default constructor
     fourlevel_state
