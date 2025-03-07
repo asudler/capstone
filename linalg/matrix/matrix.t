@@ -84,7 +84,7 @@ operator*(const matrix<T>& M, const std::vector<U>& v1)
         T sum = 0;
         for(int j = 0; j < M.size2; j++)
         {
-            sum = M(i,j)*v1[j];
+            sum += M(i,j)*v1[j];
         }
         v2[i] = sum;
     }

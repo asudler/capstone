@@ -92,6 +92,21 @@ int main(void)
     real(product).print("test real(product):");
     imag(product).print("test imag(product):");
 
+    matrix<std::complex<double>> three(3,3);
+    for(int i = 0; i < three.size1; i++) {
+        for(int j = 0; j < three.size2; j++) {
+            three(i, i) = 1.;
+        }
+    }
+    three(1,2) = 1.+2i;
+    three.print("three:");
+    std::vector<double> myVec = {1,2,3};
+
+    std::cout << "four:\n";
+    auto four = three*myVec;
+    for(auto item : four) std::cout << item << ' ';
+    std::cout << '\n';
+
     return 0;
 }
 

@@ -86,11 +86,11 @@ t_off1_pm : 2.946               # ???
                                 # default 0.
                                 # double
 
-t_on2_pm : 3.861                # ???
+t_on2_pm : 3.561                # ???
                                 # default 0. 
                                 # double
 
-t_off2_pm : 5.846               # ???
+t_off2_pm : 4.767               # ???
                                 # default 0.
                                 # double
 

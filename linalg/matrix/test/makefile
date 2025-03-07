@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -std=c++17 -g
+CXXFLAGS = -std=c++17 -g -fsanitize=address,undefined -fno-omit-frame-pointer
 LDLIBS = -lstdc++
 
 SRCS = main.cc ~/git/capstone/linalg/matrix/matrix.cc
@@ -13,5 +13,5 @@ $(TARGET) : $(OBJS)
 	$(CXX) -c $(CXXFLAGS) -o $@ $<
 
 clean :
-	rm -rf *.out *.o *.dat *.png *.csv
+	rm -rf *.out *.o *.dat *.png *.csv ../*.o
 
