@@ -430,6 +430,7 @@ std::vector<fourlevel_state> spatial_read
 {
     auto data = read(files.physical_grid, '\t', 2);
     double z = 0;
+    int counter = 0;
     std::vector<double> times_help;
     std::vector<std::complex<double>> cap_omega_pi_help;
     std::vector<std::vector<std::complex<double>>> solutions_help;
@@ -437,7 +438,8 @@ std::vector<fourlevel_state> spatial_read
 
     for(auto line : data)
     {
-        if(z != line[0])
+        counter += 1;
+        if(z != line[0] || counter >= data.size())
         {
             fourlevel_state state(inputfile);
             state.times = times_help;
@@ -464,7 +466,7 @@ std::vector<fourlevel_state> spatial_read
         }
         solutions_help.push_back(solutions_row_help);
     }
-
+    
     return states;
 }
 
