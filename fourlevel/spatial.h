@@ -10,6 +10,13 @@ std::vector<fourlevel_state> spatial_solve
     filenames // for monitoring
 );
 
+std::vector<fourlevel_state> spatial_solve
+(
+    std::vector<fourlevel_state>, 
+    boundary_conditions, // for z-grid
+    filenames // for monitoring
+);
+
 // the next two functions need to be implemented
 void spatial_print
 (
