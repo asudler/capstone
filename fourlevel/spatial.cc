@@ -198,7 +198,7 @@ std::vector<fourlevel_state> spatial_solve
         f.open(files.spatial_log);
         f.close();
     }
-
+    std::cerr << "sup brotha!\n";
     if(files.spatial_omega_base != "") // if writing omega to file,
     {                                  // make sure omega_print != 0
         if(files.omega_print == 0)     // otherwise divide by 0 error
@@ -207,8 +207,11 @@ std::vector<fourlevel_state> spatial_solve
     }
     
     std::vector<fourlevel_state> states0(bc.nxi);
+    std::cerr << "state size: " << state.size() << '\n';
+    std::cerr << "states0 size: " << states0.size() << '\n';
     for(int i = 0; i < bc.nxi; i++)
     {
+        std::cerr << i << ' ';
         states0[i] = state[i]; // use converged state from func args
         states0[i].solve();
     }
