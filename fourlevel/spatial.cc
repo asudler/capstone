@@ -207,11 +207,8 @@ std::vector<fourlevel_state> spatial_solve
     }
     
     std::vector<fourlevel_state> states0(bc.nxi);
-    std::cerr << "state size: " << state.size() << '\n';
-    std::cerr << "states0 size: " << states0.size() << '\n';
     for(int i = 0; i < bc.nxi; i++)
     {
-        std::cerr << i << ' ';
         states0[i] = state[i]; // use converged state from func args
         states0[i].solve();
     }
