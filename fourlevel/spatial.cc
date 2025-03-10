@@ -198,7 +198,7 @@ std::vector<fourlevel_state> spatial_solve
         f.open(files.spatial_log);
         f.close();
     }
-    std::cerr << "sup brotha!\n";
+    
     if(files.spatial_omega_base != "") // if writing omega to file,
     {                                  // make sure omega_print != 0
         if(files.omega_print == 0)     // otherwise divide by 0 error
@@ -432,8 +432,7 @@ std::vector<fourlevel_state> spatial_read
 )
 {
     auto data = read(files.physical_grid, '\t', 2);
-    double z = 0;
-    int counter = 0;
+    double tf = data[data.size() - 1][1];
     std::vector<double> times_help;
     std::vector<std::complex<double>> cap_omega_pi_help;
     std::vector<std::vector<std::complex<double>>> solutions_help;
@@ -441,25 +440,6 @@ std::vector<fourlevel_state> spatial_read
 
     for(auto line : data)
     {
-        counter += 1;
-        if(z != line[0] || counter >= data.size())
-        {
-            fourlevel_state state(inputfile);
-            state.times = times_help;
-            state.solutions = solutions_help;
-            state.cap_omega_pi_t = cubic_spline<std::complex<double>>
-                (state.times, cap_omega_pi_help);
-            states.push_back(state);
-
-            // Remove items from vectors
-            times_help.clear();
-            solutions_help.clear();
-            cap_omega_pi_help.clear();
-
-            // Get new z
-            z = line[0];
-        }
-
         times_help.push_back(line[1]);
         cap_omega_pi_help.push_back(line[2] + 1i*line[3]);
         std::vector<std::complex<double>> solutions_row_help;
@@ -468,6 +448,21 @@ std::vector<fourlevel_state> spatial_read
             solutions_row_help.push_back(line[4 + 2*i] + 1i*line[5 + 2*i]);
         }
         solutions_help.push_back(solutions_row_help);
+
+        if(line[1] == tf)
+        {
+            fourlevel_state state(inputfile);
+            state.times = times_help;
+            state.solutions = solutions_help;
+            state.cap_omega_pi_t = cubic_spline<std::complex<double>>
+                (state.times, cap_omega_pi_help);
+            states.push_back(state);
+            
+            // Remove items from vectors
+            times_help.clear();
+            solutions_help.clear();
+            cap_omega_pi_help.clear();
+        }
     }
     
     return states;
