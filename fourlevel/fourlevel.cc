@@ -160,6 +160,8 @@ fourlevel_state::fourlevel_state(std::string inputfile) : fourlevel_state()
                 cap_delta_plus = std::stod(value);
             else if(key == "cap_delta_upper") 
                 cap_delta_upper = std::stod(value);
+            else if(key == "decoherence") 
+                decoherence = std::stod(value);
             else if(key == "ti") 
                 ti = std::stod(value);
             else if(key == "tf") 
@@ -211,6 +213,21 @@ fourlevel_state::fourlevel_state(std::string inputfile) : fourlevel_state()
     if(!rho0_re_file.empty() && !rho0_im_file.empty())
         rho0 = matrix(read(rho0_re_file, ' ')) 
             + 1i*matrix(read(rho0_im_file, ' '));
+
+    matrix<std::complex<double>> decoherence_help(4,4);
+    decoherence_help(0,1) = decoherence;
+    decoherence_help(0,2) = decoherence;
+    decoherence_help(0,3) = decoherence;
+    decoherence_help(1,0) = decoherence;
+    decoherence_help(1,2) = decoherence;
+    decoherence_help(1,3) = decoherence;
+    decoherence_help(2,0) = decoherence;
+    decoherence_help(2,1) = decoherence;
+    decoherence_help(2,3) = decoherence;
+    decoherence_help(3,0) = decoherence;
+    decoherence_help(3,1) = decoherence;
+    decoherence_help(3,2) = decoherence;
+    decoherence_matrix = decoherence_help;
 
     // initialize beam profiles
     std::vector<double> ts; double t = 0;
@@ -508,6 +525,13 @@ std::vector<std::complex<double>> fourlevel_state::master_eq_
     matrix<std::complex<double>> rho_matrix = stack(rho_vector, 4);
     matrix<std::complex<double>> sol
         = -1i*(H(t)*rho_matrix - rho_matrix*H(t));
+    for(int i = 0; i < sol.size1; i++)
+    {
+        for(int j = 0; j < sol.size2; j++)
+        {
+            sol(i,j) -= decoherence_matrix(i,j)*sol(i,j);
+        }
+    }
     for(int i = 0; i < sol.size1; i++)
         sol(i,3) -= cap_gamma/2.*rho_matrix(i,3);
     for(int i = 0; i < sol.size2; i++)

@@ -44,7 +44,10 @@ cap_delta_plus : 0.             # ???
 
 cap_delta_upper : 0.            # ???
                                 # default 0.
-                                # double                                
+                                # double                               
+
+decoherence : 0.05              # environmental decoherence
+                                # double 
                                                                
 ti : 0.                         # initial simulation time
                                 # default 0.

@@ -34,7 +34,7 @@ struct boundary_conditions
 struct fourlevel_state
 {
     matrix<std::complex<double>> H(double), rotate(double), unrotate(double),
-        rho0;
+        rho0, decoherence_matrix;
     cubic_spline<std::complex<double>> cap_omega_plus_t, cap_omega_pi_t,
         cap_omega_minus_t;
     std::function<double(double)> theta, phi;
@@ -46,7 +46,7 @@ struct fourlevel_state
            cap_delta_B, cap_delta_pi, cap_delta_plus, cap_delta_upper, ti,
            tf, dt, t_on_pi, t_off_pi, tau_pi, t_on1_pm, t_off1_pm, 
            t_on2_pm, t_off2_pm, tau_pm, t_B_on, g, nn, chi_m, chi_p,
-           rise1, fall1, rise2, fall2;
+           rise1, fall1, rise2, fall2, decoherence;
     int nt, const_dt, use_tanh;
 
     fourlevel_state(); // default constructor
