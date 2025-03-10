@@ -91,6 +91,12 @@ std::vector<std::vector<double>> read
             {
                 std::cerr << "failed double cast: " << e.what() << '\n';
             }
+            catch(const std::out_of_range& e)
+            {
+                std::cerr << "Warning: value " << word << " out of range. "
+                          << "Replacing value with 0.\n";
+                row.push_back(0.);
+            }
         }
         data.push_back(row); // add row to data
     }
