@@ -529,7 +529,7 @@ std::vector<std::complex<double>> fourlevel_state::master_eq_
     {
         for(int j = 0; j < sol.size2; j++)
         {
-            sol(i,j) -= decoherence_matrix(i,j)*sol(i,j);
+            sol(i,j) -= decoherence_matrix(i,j)*rho_matrix(i,j);
         }
     }
     for(int i = 0; i < sol.size1; i++)
