@@ -434,7 +434,6 @@ std::vector<fourlevel_state> spatial_read
     std::vector<std::complex<double>> cap_omega_pi_help;
     std::vector<std::vector<std::complex<double>>> solutions_help;
     std::vector<fourlevel_state> states;
-
     for(auto line : data)
     {
         times_help.push_back(line[1]);
