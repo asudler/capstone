@@ -37,7 +37,7 @@ struct fourlevel_state
         rho0, decoherence_matrix;
     cubic_spline<std::complex<double>> cap_omega_plus_t, cap_omega_pi_t,
         cap_omega_minus_t;
-    std::function<double(double)> theta, phi;
+    std::function<double(double)> theta, phi, f_chi_p, f_chi_m;
     std::vector<double> times;
     std::vector<std::vector<std::complex<double>>> solutions;
 //    std::vector<cubic_spline<std::complex<double>>> solutions_spline;
@@ -46,7 +46,7 @@ struct fourlevel_state
            cap_delta_B, cap_delta_pi, cap_delta_plus, cap_delta_upper, ti,
            tf, dt, t_on_pi, t_off_pi, tau_pi, t_on1_pm, t_off1_pm, 
            t_on2_pm, t_off2_pm, tau_pm, t_B_on, g, nn, chi_m, chi_p,
-           rise1, fall1, rise2, fall2, decoherence;
+           rise1, fall1, rise2, fall2, decoherence, t_phase;
     int nt, const_dt, use_tanh;
 
     fourlevel_state(); // default constructor

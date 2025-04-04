@@ -206,6 +206,8 @@ fourlevel_state::fourlevel_state(std::string inputfile) : fourlevel_state()
                 rise2 = std::stod(value);
             else if(key == "fall2")
                 fall2 = std::stod(value);
+            else if(key == "t_phase")
+                t_phase = std::stod(value);
         }
     }
     istrm.close(); // perhaps there is a better way to do this
@@ -229,6 +231,20 @@ fourlevel_state::fourlevel_state(std::string inputfile) : fourlevel_state()
     decoherence_help(3,2) = decoherence;
     decoherence_matrix = decoherence_help;
 
+    // create control beam phase functions
+    f_chi_p = [&](double t)
+    {
+        if(t < t_phase) return 0.;
+        else if(t >= t_phase) return chi_p;
+        else return 0.;
+    };
+    f_chi_m = [&](double t)
+    {
+        if(t < t_phase) return 0.;
+        else if(t >= t_phase) return chi_m;
+        else return 0.;
+    };
+
     // initialize beam profiles
     std::vector<double> ts; double t = 0;
     while(t < tf) { ts.push_back(t); t += 0.01; }
@@ -250,6 +266,7 @@ fourlevel_state::fourlevel_state(std::string inputfile) : fourlevel_state()
                     + std::tanh(rise2*(t - t_on2_pm))
                     - std::tanh(fall2*(t - t_off2_pm))
                    );
+            help *= std::exp(1i*f_chi_p(t));
             spline_help_plus.push_back(help);
             help = 0.5*cap_omega_plus*(
                     std::tanh(rise1*(t - t_on1_pm))
@@ -257,6 +274,7 @@ fourlevel_state::fourlevel_state(std::string inputfile) : fourlevel_state()
                     + std::tanh(rise2*(t - t_on2_pm))
                     - std::tanh(fall2*(t - t_off2_pm))
                    );
+            help *= std::exp(1i*f_chi_m(t));
             spline_help_minus.push_back(help);
         }
         else 
@@ -266,26 +284,32 @@ fourlevel_state::fourlevel_state(std::string inputfile) : fourlevel_state()
                 help = cap_omega_plus
                     *exp(-0.5*(t - t_on1_pm)*(t - t_on1_pm)
                     /tau_pm/tau_pm);
+                help *= std::exp(1i*f_chi_p(t));
                 spline_help_plus.push_back(help);
                 help = cap_omega_minus
                     *exp(-0.5*(t - t_on1_pm)*(t - t_on1_pm)
                     /tau_pm/tau_pm);
+                help *= std::exp(1i*f_chi_m(t));
                 spline_help_minus.push_back(help);
             }
             else if(t >= t_on1_pm && t < t_off1_pm)
             {
-                spline_help_plus.push_back(cap_omega_plus);
-                spline_help_minus.push_back(cap_omega_minus);
+                spline_help_plus.push_back(cap_omega_plus
+                    *std::exp(1i*f_chi_p(t)));
+                spline_help_minus.push_back(cap_omega_minus
+                    *std::exp(1i*f_chi_m(t)));
             }
             else if(t >= t_off1_pm && t < (t_off1_pm + t_on2_pm)/2.)
             {
                 help = cap_omega_plus
                     *exp(-0.5*(t - t_off1_pm)*(t - t_off1_pm)
                     /tau_pm/tau_pm);
+                help *= std::exp(1i*f_chi_p(t));
                 spline_help_plus.push_back(help);
                 help = cap_omega_minus
                     *exp(-0.5*(t - t_off1_pm)*(t - t_off1_pm)
                     /tau_pm/tau_pm);
+                help *= std::exp(1i*f_chi_m(t));
                 spline_help_minus.push_back(help);
             }
             else if(t >= (t_off1_pm + t_on2_pm)/2. && t < t_on2_pm)
@@ -293,26 +317,32 @@ fourlevel_state::fourlevel_state(std::string inputfile) : fourlevel_state()
                 help = cap_omega_plus
                     *exp(-0.5*(t - t_on2_pm)*(t - t_on2_pm)
                     /tau_pm/tau_pm);
+                help *= std::exp(1i*f_chi_p(t));
                 spline_help_plus.push_back(help);
                 help = cap_omega_minus
                     *exp(-0.5*(t - t_on2_pm)*(t - t_on2_pm)
                     /tau_pm/tau_pm);
+                help *= std::exp(1i*f_chi_m(t));
                 spline_help_minus.push_back(help);
             }
             else if(t >= t_on2_pm && t < t_off2_pm)
             {
-                spline_help_plus.push_back(cap_omega_plus);
-                spline_help_minus.push_back(cap_omega_minus);
+                spline_help_plus.push_back(cap_omega_plus
+                    *std::exp(1i*f_chi_p(t)));
+                spline_help_minus.push_back(cap_omega_minus
+                    *std::exp(1i*f_chi_m(t)));
             }
             else if(t >= t_off2_pm)
             {
                 help = cap_omega_plus
                     *exp(-0.5*(t - t_off2_pm)*(t - t_off2_pm)
                     /tau_pm/tau_pm);
+                help *= std::exp(1i*f_chi_p(t));
                 spline_help_plus.push_back(help);
                 help = cap_omega_minus
                     *exp(-0.5*(t - t_off2_pm)*(t - t_off2_pm)
                     /tau_pm/tau_pm);
+                help *= std::exp(1i*f_chi_m(t));
                 spline_help_minus.push_back(help);
             }
         }
@@ -427,14 +457,14 @@ matrix<std::complex<double>> fourlevel_state::rotate(double t)
     matrix<std::complex<double>> M(3,3);
 
     M(0,0) = std::cos(theta(t))/g/std::sqrt(nn);
-    M(0,1) = -std::exp(1i*chi_m)*std::sin(theta(t))*std::sin(phi(t));
-    M(0,2) = -std::exp(1i*chi_p)*std::sin(theta(t))*std::cos(phi(t));
+    M(0,1) = -std::exp(1i*f_chi_m(t))*std::sin(theta(t))*std::sin(phi(t));
+    M(0,2) = -std::exp(1i*f_chi_p(t))*std::sin(theta(t))*std::cos(phi(t));
     M(1,0) = std::sin(theta(t))/g/std::sqrt(nn);
-    M(1,1) = std::exp(1i*chi_m)*std::cos(theta(t))*std::sin(phi(t));
-    M(1,2) = std::exp(1i*chi_p)*std::cos(theta(t))*std::cos(phi(t));
+    M(1,1) = std::exp(1i*f_chi_m(t))*std::cos(theta(t))*std::sin(phi(t));
+    M(1,2) = std::exp(1i*f_chi_p(t))*std::cos(theta(t))*std::cos(phi(t));
     M(2,0) = 0;
-    M(2,1) = std::exp(-1i*chi_p)*std::cos(phi(t));
-    M(2,2) = -std::exp(-1i*chi_m)*std::sin(phi(t));
+    M(2,1) = std::exp(-1i*f_chi_p(t))*std::cos(phi(t));
+    M(2,2) = -std::exp(-1i*f_chi_m(t))*std::sin(phi(t));
 
     return M;
 }
@@ -449,12 +479,12 @@ matrix<std::complex<double>> fourlevel_state::unrotate(double t)
     M(0,0) = g*std::sqrt(nn)*std::cos(theta(t));
     M(0,1) = g*std::sqrt(nn)*std::sin(theta(t));
     M(0,2) = 0;
-    M(1,0) = -std::exp(-1i*chi_m)*std::sin(theta(t))*std::sin(phi(t));
-    M(1,1) = std::exp(-1i*chi_m)*std::cos(theta(t))*std::sin(phi(t));
-    M(1,2) = std::exp(1i*chi_p)*std::cos(phi(t));
-    M(2,0) = -std::exp(-1i*chi_p)*std::sin(theta(t))*std::cos(phi(t));
-    M(2,1) = std::exp(-1i*chi_p)*std::cos(theta(t))*std::cos(phi(t));
-    M(2,2) = -std::exp(1i*chi_m)*std::cos(phi(t));
+    M(1,0) = -std::exp(-1i*f_chi_m(t))*std::sin(theta(t))*std::sin(phi(t));
+    M(1,1) = std::exp(-1i*f_chi_m(t))*std::cos(theta(t))*std::sin(phi(t));
+    M(1,2) = std::exp(1i*f_chi_p(t))*std::cos(phi(t));
+    M(2,0) = -std::exp(-1i*f_chi_p(t))*std::sin(theta(t))*std::cos(phi(t));
+    M(2,1) = std::exp(-1i*f_chi_p(t))*std::cos(theta(t))*std::cos(phi(t));
+    M(2,2) = -std::exp(1i*f_chi_m(t))*std::cos(phi(t));
 
     return M;
 }
@@ -509,7 +539,7 @@ void fourlevel_state::print_rabi_couplings(std::string file)
           << cap_omega_minus_t.evaluate(t).real() << ' '
           << cap_omega_minus_t.evaluate(t).imag() << ' '
           << theta(t) << ' ' << phi(t) << '\n';
-        t += 0.01;
+        t += 0.002;
     }
 
     f.close();
