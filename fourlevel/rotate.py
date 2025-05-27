@@ -9,6 +9,8 @@ parser.add_argument("-r", "--read", type=str, default="out.physical_grid.dat",
                     help="Data file name (default: out.physical_grid.dat)")
 parser.add_argument("-w", "--write", type=str, default="out.polaritons.dat",
                     help="Output file (default: out.polaritons.dat)")
+parser.add_argument("-a", "--angle", type=str, default="out.angles.dat",
+                    help="Angles file (default: out.angles.dat)")
 parser.add_argument("-i", "--input", type=str, default="in.parameters.dat",
                     help="Simulation inputfile for generating mixing angles "
                          + "(default: in.parameters.dat)")
@@ -16,6 +18,7 @@ args = parser.parse_args()
 
 readfile = args.read
 writefile = args.write
+anglefile = args.angle
 inputfile = args.input
 
 print("Loading simulation data.")
@@ -116,11 +119,15 @@ for i in range(len(xis)):
                                                        sigma23_grid[i,j]])
         output.append([xis[i], taus[j], np.real(lhs[0]), np.imag(lhs[0]),
                        np.real(lhs[1]), np.imag(lhs[1]), np.real(lhs[2]),
-                       np.imag(lhs[2]), theta(taus[j]), phi(taus[j])])
+                       np.imag(lhs[2])])
     output.append([])
 
+angles = []
+for i in range(len(taus)):
+    angles.append([taus[i], theta(taus[i]), phi(taus[i])])
+
 print("Writing output to file.")
-header="xi, tau, Re/Im Psi, Re/Im Phi, Re/Im Z, theta, phi"
+header="xi, tau, Re/Im Psi, Re/Im Phi, Re/Im Z"
 with open(writefile, 'w') as f:
     f.write(header + '\n\n')
     for row in output:
@@ -128,3 +135,10 @@ with open(writefile, 'w') as f:
             f.write("\n")
         else:
             f.write("\t".join(map(str, row)) + '\n')
+
+header="tau, theta, phi"
+with open(anglefile, 'w') as f:
+    f.write(header + '\n\n')
+    for row in angles:
+        f.write("\t".join(map(str, row)) + '\n')
+
