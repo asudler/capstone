@@ -268,7 +268,7 @@ fourlevel_state::fourlevel_state(std::string inputfile) : fourlevel_state()
                    );
             help *= std::exp(1i*f_chi_p(t));
             spline_help_plus.push_back(help);
-            help = 0.5*cap_omega_plus*(
+            help = 0.5*cap_omega_minus*(
                     std::tanh(rise1*(t - t_on1_pm))
                     - std::tanh(fall1*(t - t_off1_pm))
                     + std::tanh(rise2*(t - t_on2_pm))
