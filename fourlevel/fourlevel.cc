@@ -232,21 +232,21 @@ fourlevel_state::fourlevel_state(std::string inputfile) : fourlevel_state()
     decoherence_matrix = decoherence_help;
 
     // create control beam phase functions
-    f_chi_p = [&](double t)
-    {
-        if(t < t_phase) return 0.;
-        else if(t >= t_phase) return chi_p;
-        else return 0.;
-    };
-    f_chi_m = [&](double t)
-    {
-        if(t < t_phase) return 0.;
-        else if(t >= t_phase) return chi_m;
-        else return 0.;
-    };
+//    f_chi_p = [&](double t)
+//    {
+//        if(t < t_phase) return 0.;
+//        else if(t >= t_phase) return chi_p;
+//        else return 0.;
+//    };
+//    f_chi_m = [&](double t)
+//    {
+//        if(t < t_phase) return 0.;
+//        else if(t >= t_phase) return chi_m;
+//        else return 0.;
+//    };
 
     // initialize beam profiles
-    std::vector<double> ts; double t = 0;
+    std::vector<double> ts; double t = ti;
     while(t < tf) { ts.push_back(t); t += 0.01; }
     ts.push_back(tf);
 
@@ -263,18 +263,18 @@ fourlevel_state::fourlevel_state(std::string inputfile) : fourlevel_state()
             help = 0.5*cap_omega_plus*(
                     std::tanh(rise1*(t - t_on1_pm))
                     - std::tanh(fall1*(t - t_off1_pm))
-                    + std::tanh(rise2*(t - t_on2_pm))
-                    - std::tanh(fall2*(t - t_off2_pm))
+                    + (std::tanh(rise2*(t - t_on2_pm))
+                    - std::tanh(fall2*(t - t_off2_pm))*std::exp(1i*chi_p))
                    );
-            help *= std::exp(1i*f_chi_p(t));
+//            help *= std::exp(1i*f_chi_p(t));
             spline_help_plus.push_back(help);
             help = 0.5*cap_omega_minus*(
                     std::tanh(rise1*(t - t_on1_pm))
                     - std::tanh(fall1*(t - t_off1_pm))
-                    + std::tanh(rise2*(t - t_on2_pm))
-                    - std::tanh(fall2*(t - t_off2_pm))
+                    + (std::tanh(rise2*(t - t_on2_pm))
+                    - std::tanh(fall2*(t - t_off2_pm))*std::exp(1i*chi_m))
                    );
-            help *= std::exp(1i*f_chi_m(t));
+//            help *= std::exp(1i*f_chi_m(t));
             spline_help_minus.push_back(help);
         }
         else 
@@ -500,7 +500,7 @@ void fourlevel_state::print_beams(std::string file)
       << "pi beam (re), pi beam (im), "
       << "minus beam (re), minus beam (im)\n";
 
-    double t = 0;
+    double t = ti;
     while(t < tf)
     {
         f << t << ' '
@@ -528,7 +528,7 @@ void fourlevel_state::print_rabi_couplings(std::string file)
       << "Re(\\Omega_-), Im(\\Omega_-), "
       << "\\theta, \\phi\n";
 
-    double t = 0;
+    double t = ti;
     while(t < tf)
     {
         f << t << ' '

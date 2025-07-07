@@ -175,7 +175,7 @@ std::vector<fourlevel_state> spatial_solve
             states0[bc.nxi - 1].print_rho_log(files.spatial_rho_xif_log);
         if(norm < bc.tolerance) // consider "normalizing" lol
         { 
-            return states0; 
+            return states1; 
         }
 
         omega0 = omega1.copy();
@@ -314,7 +314,7 @@ std::vector<fourlevel_state> spatial_solve
             states0[bc.nxi - 1].print_rho_log(files.spatial_rho_xif_log);
         if(norm < bc.tolerance)
         { 
-            return states0; 
+            return states1; 
         }
 
         omega0 = omega1.copy();
